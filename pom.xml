@@ -25,6 +25,11 @@
 	</properties>
 
 	<dependencies>
+	<dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>14.0.1</version>
+        </dependency>
 		<!-- GridFS kanta yhteys -->
 		<dependency>
 			<groupId>com.google.code.morphia</groupId>
