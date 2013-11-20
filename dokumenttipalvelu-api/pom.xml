@@ -22,6 +22,7 @@
         	<groupId>com.sun.jersey.contribs</groupId>
         	<artifactId>jersey-multipart</artifactId>
         	<version>1.17.1</version>
+        	<scope>provided</scope>
         </dependency>
 	</dependencies>
 
