@@ -2,18 +2,17 @@ package fi.vm.sade.valinta.dokumenttipalvelu.resource;
 
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import com.sun.jersey.multipart.FormDataParam;
-
-import fi.vm.sade.valinta.dokumenttipalvelu.dto.FileDescription;
 import fi.vm.sade.valinta.dokumenttipalvelu.dto.MetaData;
 
 /**
@@ -42,30 +41,20 @@ public interface DokumenttiResource {
     @GET
     @Path("hae")
     @Produces(MediaType.APPLICATION_JSON)
-    Collection<MetaData> hae();
-
-    /**
-     * Hakee listan dokumenteista palvelunnimella ja dokumentin tyypilla.
-     * Erottelu siksi etta tulevaisuudessa voidaan tehda yksilolliset
-     * kaytto-oikeusvaatimukset palveluille.
-     * 
-     * @param serviceName
-     *            viestintapalvelu
-     * @param documentType
-     *            hyvaksymiskirje
-     * @return json kaikista taltioiduista dokumenteista
-     */
-    @GET
-    @Path("hae/{servicename}/{documenttype}")
-    @Produces(MediaType.APPLICATION_JSON)
-    Collection<MetaData> hae(@PathParam("servicename") String serviceName,
-            @PathParam("documenttype") String documentType);
+    Collection<MetaData> hae(@QueryParam("tags") List<String> tags);
 
     /**
      * 
+     * @param filename
+     * @param expirationDate
+     *            [OPTIONAL] DEFAULTS TO 24H
+     * @param tags
+     *            [OPTIONAL]
+     * @param filedata
      */
-    @POST
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @PUT
     @Path("tallenna")
-    void tallenna(@FormDataParam("tiedosto") InputStream tiedosto, @FormDataParam("kuvaus") FileDescription kuvaus);
+    @Consumes("application/octet-stream")
+    public void tallenna(@QueryParam("filename") String filename, @QueryParam("expirationDate") Long expirationDate,
+            @QueryParam("tags") List<String> tags, InputStream filedata);
 }

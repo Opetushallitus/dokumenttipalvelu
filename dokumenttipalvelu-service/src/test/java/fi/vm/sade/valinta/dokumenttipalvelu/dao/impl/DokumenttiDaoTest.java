@@ -83,8 +83,8 @@ public class DokumenttiDaoTest {
 
     @Test
     public void testGetAllWithQuery() throws IOException {
-        Collection<MetaData> m0 = dokumenttiDao.getAll(VIESTINTAPALVELU, OSOITETARRAT);
-        Collection<MetaData> m1 = dokumenttiDao.getAll(VIESTINTAPALVELU);
+        Collection<MetaData> m0 = dokumenttiDao.getAll(Arrays.asList(VIESTINTAPALVELU, OSOITETARRAT));
+        Collection<MetaData> m1 = dokumenttiDao.getAll(Arrays.asList(VIESTINTAPALVELU));
         assertFalse(m0.isEmpty());
         assertFalse(m1.isEmpty());
         assertTrue(m0.size() < m1.size());

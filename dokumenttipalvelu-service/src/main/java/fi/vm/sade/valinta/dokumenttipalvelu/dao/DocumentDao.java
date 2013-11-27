@@ -15,7 +15,7 @@ public interface DocumentDao {
 
     Collection<MetaData> getAll();
 
-    Collection<MetaData> getAll(String... tag);
+    Collection<MetaData> getAll(Collection<String> tags);
 
     InputStream get(String documentId);
 

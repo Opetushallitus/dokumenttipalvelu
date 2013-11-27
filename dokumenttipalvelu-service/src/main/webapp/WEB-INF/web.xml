@@ -23,7 +23,20 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-    <servlet>
+	<servlet>
+        <servlet-name>Jersey REST Service</servlet-name>
+        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>javax.ws.rs.Application</param-name>
+            <param-value>fi.vm.sade.valinta.dokumenttipalvelu.resource.impl.ResourceConfiguration</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Jersey REST Service</servlet-name>
+        <url-pattern>/resources/*</url-pattern>
+    </servlet-mapping>
+    <!-- servlet>
         <servlet-name>Jersey REST Service</servlet-name>
         <servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>
         <init-param>
@@ -35,7 +48,7 @@
     <servlet-mapping>
         <servlet-name>Jersey REST Service</servlet-name>
         <url-pattern>/resources/*</url-pattern>
-    </servlet-mapping>
+    </servlet-mapping -->
 
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>

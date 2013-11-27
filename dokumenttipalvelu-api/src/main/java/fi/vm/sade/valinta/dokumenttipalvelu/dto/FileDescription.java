@@ -1,8 +1,6 @@
 package fi.vm.sade.valinta.dokumenttipalvelu.dto;
 
-import java.util.Collections;
 import java.util.Date;
-import java.util.Map;
 
 /**
  * 
@@ -11,12 +9,13 @@ import java.util.Map;
  */
 public class FileDescription {
 
-    private static final int ONE_DAY = 1;
+    // private static final int ONE_DAY = 1;
     private String filename;
     private String serviceName;
     private String documentType;
     private Date expirationDate;
-    private Map<String, String> metaData = Collections.emptyMap();
+
+    // private Map<String, String> metaData = Collections.emptyMap();
 
     public FileDescription(String filename, String serviceName, String documentType, Date expirationDate) {
         this.filename = filename;
@@ -29,9 +28,7 @@ public class FileDescription {
         return expirationDate;
     }
 
-    public Map<String, String> getMetaData() {
-        return metaData;
-    }
+    // public Map<String, String> getMetaData() { return metaData;}
 
     public String getDocumentType() {
         return documentType;
@@ -43,6 +40,12 @@ public class FileDescription {
 
     public String getFilename() {
         return filename;
+    }
+
+    @Override
+    public String toString() {
+        final String VALI = ", ";
+        return new StringBuilder().append(filename).append(VALI).append(documentType).toString();
     }
 
 }

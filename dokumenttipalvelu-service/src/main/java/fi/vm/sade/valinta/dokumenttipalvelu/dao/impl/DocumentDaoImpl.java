@@ -19,7 +19,6 @@ import org.springframework.stereotype.Repository;
 import com.google.code.morphia.Datastore;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -66,9 +65,9 @@ public class DocumentDaoImpl implements DocumentDao, FlushDao {
     }
 
     @Override
-    public Collection<MetaData> getAll(String... tags) {
+    public Collection<MetaData> getAll(Collection<String> tags) {
         BasicDBList list = new BasicDBList();
-        list.addAll(Lists.newArrayList(tags));
+        list.addAll(tags);
         Collection<GridFSDBFile> dbojs = this.documents.find(new BasicDBObject(GRIDFS_ALIASES_FIELD, new BasicDBObject(
                 "$all", list)));
         return transform(dbojs);
@@ -121,7 +120,7 @@ public class DocumentDaoImpl implements DocumentDao, FlushDao {
         file.setContentType(mimeType);
         file.put(GRIDFS_ALIASES_FIELD, Arrays.asList(description.getServiceName(), description.getDocumentType()));
         file.put(GRIDFS_EXPIRATION_DATE_FIELD, description.getExpirationDate());
-        file.setMetaData(new BasicDBObject(description.getMetaData()));
+        file.setMetaData(new BasicDBObject(Collections.emptyMap()));
         file.save();
         return new MetaData(file.getId().toString(), file.getFilename(), file.getContentType(), file.getUploadDate(),
                 (Date) file.get(GRIDFS_EXPIRATION_DATE_FIELD), file.getAliases(), file.getMetaData().toMap(),
