@@ -1,7 +1,7 @@
 package fi.vm.sade.valinta.dokumenttipalvelu.dto;
 
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -14,21 +14,25 @@ public class MetaData {
     private String mimeType;
     private String documentId;
     private String filename;
-    private Date createdAt;
-    private Collection<String> tags; // viestintapalvelu,
-                                     // valintalaskentakoostepalvelu,
+    private String createdAt;
+    private List<String> tags; // viestintapalvelu,
+                               // valintalaskentakoostepalvelu,
     // hyvaksymiskirje, jalkiohjauskirje, ...
-    private Map<String, ? extends Object> data;
-    private long size;
+    // private Map<String, ? extends Object> data;
+    private String size;
     private String md5;
     private Date expirationDate;
 
-    public MetaData(String documentId, String filename, String mimeType, Date createdAt, Date expirationDate,
-            Collection<String> tags, Map data, long size, String md5) {
+    public MetaData() {
+
+    }
+
+    public MetaData(String documentId, String filename, String mimeType, String createdAt, Date expirationDate,
+            List<String> tags, Map data, String size, String md5) {
         this.documentId = documentId;
         this.mimeType = mimeType;
         this.filename = filename;
-        this.data = data;
+        // this.data = data;
         this.tags = tags;
         this.size = size;
         this.createdAt = createdAt;
@@ -44,15 +48,13 @@ public class MetaData {
         return md5;
     }
 
-    public Map<String, ? extends Object> getData() {
-        return data;
-    }
+    // public Map<String, ? extends Object> getData() { return data; }
 
-    public long getSize() {
+    public String getSize() {
         return size;
     }
 
-    public Collection<String> getTags() {
+    public List<String> getTags() {
         return tags;
     }
 
@@ -60,7 +62,7 @@ public class MetaData {
         return filename;
     }
 
-    public Date getCreatedAt() {
+    public String getCreatedAt() {
         return createdAt;
     }
 
