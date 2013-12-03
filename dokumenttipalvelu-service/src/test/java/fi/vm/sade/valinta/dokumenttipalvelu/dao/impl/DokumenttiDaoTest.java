@@ -57,11 +57,13 @@ public class DokumenttiDaoTest {
     @Before
     public void testPut() throws IOException {
         // expires now
-        metaOsoitekirje = dokumenttiDao.put(new FileDescription(TEST_PDF, VIESTINTAPALVELU, OSOITETARRAT, now()
-                .toDate()), new ClassPathResource(TEST_PDF).getInputStream());
+        metaOsoitekirje = dokumenttiDao.put(new FileDescription(TEST_PDF,
+                Arrays.asList(VIESTINTAPALVELU, OSOITETARRAT), now().toDate(), ""), new ClassPathResource(TEST_PDF)
+                .getInputStream());
         // expires not during this test
-        metaHyvaksymiskirje = dokumenttiDao.put(new FileDescription(TEST_PDF2, VIESTINTAPALVELU, HYVAKSYMISKIRJE, now()
-                .plusYears(1).toDate()), new ClassPathResource(TEST_PDF).getInputStream());
+        metaHyvaksymiskirje = dokumenttiDao.put(
+                new FileDescription(TEST_PDF2, Arrays.asList(VIESTINTAPALVELU, HYVAKSYMISKIRJE), now().plusYears(1)
+                        .toDate(), ""), new ClassPathResource(TEST_PDF).getInputStream());
     }
 
     @Test

@@ -15,7 +15,8 @@ public class MetaData {
     private String documentId;
     private String filename;
     private Date createdAt;
-    private Collection<String> tags; // viestintapalvelu, koostepalvelu,
+    private Collection<String> tags; // viestintapalvelu,
+                                     // valintalaskentakoostepalvelu,
     // hyvaksymiskirje, jalkiohjauskirje, ...
     private Map<String, ? extends Object> data;
     private long size;

@@ -3,7 +3,6 @@ package fi.vm.sade.valinta.dokumenttipalvelu.dao.impl;
 import static org.joda.time.DateTime.now;
 
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -110,15 +109,12 @@ public class DocumentDaoImpl implements DocumentDao, FlushDao {
         String filename = description.getFilename();
         GridFSInputFile file = documents.createFile(documentData, filename);
         file.setId(UUID.randomUUID().toString());
-        String mimeType = StringUtils.EMPTY;
-        String extension = getExtension(filename);
-        if ("pdf".equalsIgnoreCase(extension)) {
-            mimeType = "application/pdf";
-        } else if ("xls".equalsIgnoreCase(extension)) {
-            mimeType = "application/vnd.ms-excel";
+        String mimeType = description.getMimeType();
+        if (mimeType == null) {
+            mimeType = StringUtils.EMPTY;
         }
         file.setContentType(mimeType);
-        file.put(GRIDFS_ALIASES_FIELD, Arrays.asList(description.getServiceName(), description.getDocumentType()));
+        file.put(GRIDFS_ALIASES_FIELD, description.getTags());
         file.put(GRIDFS_EXPIRATION_DATE_FIELD, description.getExpirationDate());
         file.setMetaData(new BasicDBObject(Collections.emptyMap()));
         file.save();
@@ -127,13 +123,4 @@ public class DocumentDaoImpl implements DocumentDao, FlushDao {
                 file.getLength(), file.getMD5());
     }
 
-    private static String getExtension(String filename) {
-        String dotSeparated[] = filename.split("\\.");
-        try {
-            return dotSeparated[dotSeparated.length - 1];
-        } catch (Exception e) {
-            LOG.warn("Couldn't get extension for filename {}", filename);
-        }
-        return StringUtils.EMPTY;
-    }
 }

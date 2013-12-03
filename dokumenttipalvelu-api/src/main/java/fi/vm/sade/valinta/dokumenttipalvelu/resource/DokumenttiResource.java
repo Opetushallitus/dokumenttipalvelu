@@ -13,6 +13,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import fi.vm.sade.valinta.dokumenttipalvelu.dto.Message;
 import fi.vm.sade.valinta.dokumenttipalvelu.dto.MetaData;
 
 /**
@@ -44,11 +45,12 @@ public interface DokumenttiResource {
     Collection<MetaData> hae(@QueryParam("tags") List<String> tags);
 
     /**
-     * 
      * @param filename
      * @param expirationDate
      *            [OPTIONAL] DEFAULTS TO 24H
      * @param tags
+     *            [OPTIONAL]
+     * @param mimeType
      *            [OPTIONAL]
      * @param filedata
      */
@@ -56,5 +58,10 @@ public interface DokumenttiResource {
     @Path("tallenna")
     @Consumes("application/octet-stream")
     public void tallenna(@QueryParam("filename") String filename, @QueryParam("expirationDate") Long expirationDate,
-            @QueryParam("tags") List<String> tags, InputStream filedata);
+            @QueryParam("tags") List<String> tags, @QueryParam("mimeType") String mimeType, InputStream filedata);
+
+    @PUT
+    @Path("viesti")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void viesti(Message message);
 }
