@@ -56,7 +56,7 @@ public class MongoConfiguration {
         return mongodExecutable;// .newMongo();
     }
 
-    @Bean
+    @Bean(destroyMethod = "stop")
     public MongodProcess getMongoProcess(MongodExecutable mongodExecutable) throws IOException {
         return mongodExecutable.start();
     }
