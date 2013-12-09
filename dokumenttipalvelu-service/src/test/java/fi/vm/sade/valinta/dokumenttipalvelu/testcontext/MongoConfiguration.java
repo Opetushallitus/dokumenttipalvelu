@@ -1,6 +1,7 @@
 package fi.vm.sade.valinta.dokumenttipalvelu.testcontext;
 
 import java.io.IOException;
+import java.util.Random;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,8 +9,17 @@ import org.springframework.context.annotation.Configuration;
 import com.google.code.morphia.Datastore;
 import com.google.code.morphia.Morphia;
 import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
+import com.mongodb.ServerAddress;
 
-import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
+import de.flapdoodle.embed.mongo.MongodExecutable;
+import de.flapdoodle.embed.mongo.MongodProcess;
+import de.flapdoodle.embed.mongo.MongodStarter;
+import de.flapdoodle.embed.mongo.config.IMongodConfig;
+import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
+import de.flapdoodle.embed.mongo.config.Net;
+import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.process.runtime.Network;
 
 /**
  * 
@@ -20,15 +30,44 @@ import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 public class MongoConfiguration {
     public static final String DATABASE_NAME = "fakemongodb";
 
+    static final int PORT = freePort();
+
+    private static int freePort() {
+        for (int i = 0; i < 10; ++i) {
+            try {
+                return Network.getFreeServerPort();
+            } catch (IOException e) {
+            }
+        }
+        return 32452 - new Random().nextInt(20000);
+    }
+
     // fake mongo db
-    @Bean(destroyMethod = "shutdown")
-    public MongodForTestsFactory getMongoFactory() throws IOException {
-        return new MongodForTestsFactory();// .newMongo();
+    @Bean(destroyMethod = "stop")
+    public MongodExecutable getMongodExecutable() throws IOException {
+        IMongodConfig mongodConfig = new MongodConfigBuilder().version(Version.Main.PRODUCTION)
+                .net(new Net(PORT, Network.localhostIsIPv6())).build();
+
+        MongodStarter runtime = MongodStarter.getDefaultInstance();
+
+        MongodExecutable mongodExecutable = null;
+        mongodExecutable = runtime.prepare(mongodConfig);
+
+        return mongodExecutable;// .newMongo();
     }
 
     @Bean
-    public Mongo getMongo(MongodForTestsFactory factory) throws IOException {
-        return factory.newMongo();
+    public MongodProcess getMongoProcess(MongodExecutable mongodExecutable) throws IOException {
+        return mongodExecutable.start();
+    }
+
+    @Bean
+    public Mongo getMongo(MongodProcess process) throws IOException {
+
+        // MongoClient mongo =
+        // return new MongoClient(new ServerAddress(Network.getLocalHost(),
+        // Network.getFreeServerPort()));
+        return new MongoClient(new ServerAddress(Network.getLocalHost(), PORT)); // factory.newMongo();
     }
 
     @Bean
