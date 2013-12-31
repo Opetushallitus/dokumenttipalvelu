@@ -21,7 +21,8 @@
         <property name="properties">
             <util:properties local-override="true">
                 <prop key="cas_key">dokumenttipalvelu</prop>
-                <prop key="cas_service">${cas.service.dokumenttipalvelu:}</prop>
+                <prop key="cas_service">${cas.service.dokumenttipalvelu}</prop>
+                <prop key="cas_callback_url">${cas.callback.dokumenttipalvelu-service}</prop>
                 <prop key="spring_security_default_access">permitAll</prop>
             </util:properties>
         </property>
