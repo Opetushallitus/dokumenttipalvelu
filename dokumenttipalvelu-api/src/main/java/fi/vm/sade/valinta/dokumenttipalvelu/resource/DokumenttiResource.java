@@ -31,18 +31,32 @@ public interface DokumenttiResource {
      * @return dokumentti
      */
     @GET
-    @Path("lataa/{documentid}")
+    @Path("/lataa/{documentid}")
     InputStream lataa(@PathParam("documentid") String documentId);
 
     /**
-     * Hakee listan kaikista dokumenteista
+     * Hakee listan kaikista dokumenteista. Kayttajatunnus on osa tagia. Eli
+     * talla metodilla voi hakea ainoastaan omia dokumentteja.
      * 
      * @return json kaikista taltioiduista dokumenteista
      */
     @GET
-    @Path("hae")
+    @Path("/hae")
     @Produces(MediaType.APPLICATION_JSON)
     Collection<MetaData> hae(@QueryParam("tags") List<String> tags);
+
+    /**
+     * Hakee listan kaikista dokumenteista. Ei rajoita kayttajatunnuksella
+     * automaattisesti.
+     * 
+     * hasAnyRole('ROLE_APP_VALINTAPERUSTEET_CRUD_1.2.246.562.10.00000000001')
+     * 
+     * @return json kaikista taltioiduista dokumenteista
+     */
+    @GET
+    @Path("/yllapitohaku")
+    @Produces(MediaType.APPLICATION_JSON)
+    Collection<MetaData> yllapitohaku(@QueryParam("tags") List<String> tags);
 
     /**
      * @param filename
@@ -55,13 +69,13 @@ public interface DokumenttiResource {
      * @param filedata
      */
     @PUT
-    @Path("tallenna")
+    @Path("/tallenna")
     @Consumes("application/octet-stream")
     public void tallenna(@QueryParam("filename") String filename, @QueryParam("expirationDate") Long expirationDate,
             @QueryParam("tags") List<String> tags, @QueryParam("mimeType") String mimeType, InputStream filedata);
 
     @PUT
-    @Path("viesti")
+    @Path("/viesti")
     @Consumes(MediaType.APPLICATION_JSON)
     public void viesti(Message message);
 }

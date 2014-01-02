@@ -62,7 +62,11 @@ public class DocumentDaoImpl implements DocumentDao, FlushDao {
 
     @Override
     public Collection<MetaData> getAll() {
-        return transform(this.documents.getFileList().toArray());
+        return transform(this.documents.getFileList(new BasicDBObject(), sortByUploadDateDescending()).toArray());
+    }
+
+    private BasicDBObject sortByUploadDateDescending() {
+        return new BasicDBObject(GRIDFS_UPLOAD_DATE_FIELD, -1);
     }
 
     @Override
@@ -70,7 +74,7 @@ public class DocumentDaoImpl implements DocumentDao, FlushDao {
         BasicDBList list = new BasicDBList();
         list.addAll(tags);
         Collection<GridFSDBFile> dbojs = this.documents.find(new BasicDBObject(GRIDFS_ALIASES_FIELD, new BasicDBObject(
-                "$all", list)));
+                "$all", list)), sortByUploadDateDescending());
         return transform(dbojs);
     }
 
@@ -127,7 +131,7 @@ public class DocumentDaoImpl implements DocumentDao, FlushDao {
                 humanReadableByteCount(file.getLength(), true), file.getMD5());
     }
 
-    public static String humanReadableByteCount(long bytes, boolean si) {
+    private static String humanReadableByteCount(long bytes, boolean si) {
         int unit = si ? 1000 : 1024;
         if (bytes < unit)
             return bytes + " B";
