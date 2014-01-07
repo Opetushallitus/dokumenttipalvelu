@@ -23,16 +23,6 @@ import fi.vm.sade.valinta.dokumenttipalvelu.dto.MetaData;
  */
 @Path("dokumentit")
 public interface DokumenttiResource {
-    /**
-     * Lataa dokumentin
-     * 
-     * @param documentId
-     *            esim viestintapalvelu.hyvaksymiskirje.3241234ID
-     * @return dokumentti
-     */
-    @GET
-    @Path("/lataa/{documentid}")
-    InputStream lataa(@PathParam("documentid") String documentId);
 
     /**
      * Hakee listan kaikista dokumenteista. Kayttajatunnus on osa tagia. Eli
@@ -57,6 +47,17 @@ public interface DokumenttiResource {
     @Path("/yllapitohaku")
     @Produces(MediaType.APPLICATION_JSON)
     Collection<MetaData> yllapitohaku(@QueryParam("tags") List<String> tags);
+
+    /**
+     * Lataa dokumentin
+     * 
+     * @param documentId
+     *            esim viestintapalvelu.hyvaksymiskirje.3241234ID
+     * @return dokumentti
+     */
+    @GET
+    @Path("/lataa/{documentid}")
+    InputStream lataa(@PathParam("documentid") String documentId);
 
     /**
      * @param filename

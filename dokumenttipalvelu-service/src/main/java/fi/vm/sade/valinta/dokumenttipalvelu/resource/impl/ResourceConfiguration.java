@@ -11,10 +11,15 @@ import org.glassfish.jersey.server.ResourceConfig;
 public class ResourceConfiguration extends ResourceConfig {
     //
     public ResourceConfiguration() {
-        packages("org.glassfish.jersey.examples.jackson")
+        // packages("fi.vm.sade.valinta.dokumenttipalvelu.resource.impl.DokumenttiResourceImpl");
         // json output and input
-                .register(JacksonFeature.class);
+        register(JacksonFeature.class);
         // register(MultiPartFeature.class);
+
         register(DokumenttiResourceImpl.class);
+
+        registerInstances(new com.wordnik.swagger.jaxrs.listing.ResourceListingProvider(),
+                new com.wordnik.swagger.jaxrs.listing.ApiDeclarationProvider());
+        register(com.wordnik.swagger.jaxrs.listing.ApiListingResourceJSON.class);
     }
 }
