@@ -29,6 +29,7 @@ import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 
 import fi.vm.sade.valinta.dokumenttipalvelu.dao.DocumentDao;
+import fi.vm.sade.valinta.dokumenttipalvelu.dao.FlushDao;
 import fi.vm.sade.valinta.dokumenttipalvelu.dto.FileDescription;
 import fi.vm.sade.valinta.dokumenttipalvelu.dto.Message;
 import fi.vm.sade.valinta.dokumenttipalvelu.dto.MetaData;
@@ -42,7 +43,9 @@ public class DokumenttiResourceImpl implements DokumenttiResource {
     private static final Logger LOG = LoggerFactory.getLogger(DokumenttiResourceImpl.class);
 
     @Autowired
-    DocumentDao documentDao;
+    private DocumentDao documentDao;
+    @Autowired
+    private FlushDao flushDao;
 
     @ApiOperation(value = "Dokumenttien haku käyttäjätunnuksella", response = Collection.class)
     @GET
@@ -103,6 +106,14 @@ public class DokumenttiResourceImpl implements DokumenttiResource {
         documentDao.put(
                 new FileDescription(message.getMessage(), addUserAsTag(message.getTags()), message.getExpirationDate(),
                         "text/plain"), new ByteArrayInputStream(new byte[] {}));
+    }
+
+    @ApiOperation(value = "Tyhjentaa vanhentuneet dokumentit tietokannasta. Koostepalvelu kutsuu toimintoa. "
+            + "Tarkoitus on etta dokumenttipalvelu on mahdollisimman passiivinen.")
+    @PUT
+    @Path("/tyhjenna")
+    public void tyhjenna() {
+        flushDao.flush();
     }
 
     private List<String> addUserAsTag(Collection<String> tags) {

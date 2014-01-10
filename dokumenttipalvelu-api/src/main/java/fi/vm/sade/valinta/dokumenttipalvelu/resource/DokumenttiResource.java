@@ -79,4 +79,13 @@ public interface DokumenttiResource {
     @Path("/viesti")
     @Consumes(MediaType.APPLICATION_JSON)
     public void viesti(Message message);
+
+    /**
+     * Tyhjentaa vanhentuneet dokumentit tietokannasta. Koostepalvelu kutsuu
+     * toimintoa. Tarkoitus on etta dokumenttipalvelu on mahdollisimman
+     * passiivinen.
+     */
+    @PUT
+    @Path("/tyhjenna")
+    public void tyhjenna();
 }
