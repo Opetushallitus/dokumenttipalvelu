@@ -102,7 +102,7 @@ public class DocumentDaoImpl implements DocumentDao, FlushDao {
     @Override
     public void flush() {
         this.documents
-                .remove(new BasicDBObject(GRIDFS_EXPIRATION_DATE_FIELD, new BasicDBObject("$gte", now().toDate())));
+                .remove(new BasicDBObject(GRIDFS_EXPIRATION_DATE_FIELD, new BasicDBObject("$lte", now().toDate())));
     }
 
     @Override
