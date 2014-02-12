@@ -40,101 +40,108 @@ import fi.vm.sade.valinta.dokumenttipalvelu.resource.DokumenttiResource;
 @Component
 public class DokumenttiResourceImpl implements DokumenttiResource {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DokumenttiResourceImpl.class);
+	private static final Logger LOG = LoggerFactory
+			.getLogger(DokumenttiResourceImpl.class);
 
-    @Autowired
-    private DocumentDao documentDao;
-    @Autowired
-    private FlushDao flushDao;
+	@Autowired
+	private DocumentDao documentDao;
+	@Autowired
+	private FlushDao flushDao;
 
-    @ApiOperation(value = "Dokumenttien haku käyttäjätunnuksella", response = Collection.class)
-    @GET
-    @Path("/hae")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Override
-    public Collection<MetaData> hae(@PathParam("documentid") List<String> tags) {
-        return documentDao.getAll(addUserAsTag(tags));
-    }
+	@ApiOperation(value = "Dokumenttien haku käyttäjätunnuksella", response = Collection.class)
+	@GET
+	@Path("/hae")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Override
+	public Collection<MetaData> hae(@QueryParam("tags") List<String> tags) {
+		return documentDao.getAll(addUserAsTag(tags));
+	}
 
-    @ApiOperation(value = "Suojattu operaatio kaikkien dokumenttien hakuun", response = Collection.class)
-    @GET
-    @Path("/yllapitohaku")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Override
-    @PreAuthorize("hasAnyRole('ROLE_APP_VALINTAPERUSTEET_CRUD_1.2.246.562.10.00000000001')")
-    public Collection<MetaData> yllapitohaku(@PathParam("documentid") List<String> tags) {
-        if (tags == null || tags.size() == 0) {
-            return documentDao.getAll();
-        } else {
-            return documentDao.getAll(tags);
-        }
-    }
+	@ApiOperation(value = "Suojattu operaatio kaikkien dokumenttien hakuun", response = Collection.class)
+	@GET
+	@Path("/yllapitohaku")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Override
+	@PreAuthorize("hasAnyRole('ROLE_APP_VALINTAPERUSTEET_CRUD_1.2.246.562.10.00000000001')")
+	public Collection<MetaData> yllapitohaku(
+			@PathParam("documentid") List<String> tags) {
+		if (tags == null || tags.size() == 0) {
+			return documentDao.getAll();
+		} else {
+			return documentDao.getAll(tags);
+		}
+	}
 
-    @ApiOperation(value = "Dokumentin lataus tunnisteella", response = InputStream.class)
-    @GET
-    @Path("/lataa/{documentid}")
-    @Override
-    public InputStream lataa(@PathParam("documentid") String documentId) {
-        return documentDao.get(documentId);
-    }
+	@ApiOperation(value = "Dokumentin lataus tunnisteella", response = InputStream.class)
+	@GET
+	@Path("/lataa/{documentid}")
+	@Override
+	public InputStream lataa(@PathParam("documentid") String documentId) {
+		return documentDao.get(documentId);
+	}
 
-    @ApiOperation(value = "Dokumentin tallennus")
-    @PUT
-    @Path("/tallenna")
-    @Consumes("application/octet-stream")
-    @Override
-    public void tallenna(@QueryParam("filename") String filename, @QueryParam("expirationDate") Long expirationDate,
-            @QueryParam("tags") List<String> tags, @QueryParam("mimeType") String mimeType, InputStream filedata) {
-        tags = addUserAsTag(tags);
-        if (tags == null) {
-            tags = Collections.emptyList();
-        }
-        if (mimeType == null) {
-            mimeType = MimeTypeUtil.guessMimeType(filename);
-        }
-        LOG.info("Filename {}, date {}, tags {} and stream {}",
-                new Object[] { filename, expirationDate, Arrays.toString(tags.toArray()), filedata });
-        documentDao.put(new FileDescription(filename, tags, new DateTime(expirationDate).toDate(), mimeType), filedata);
-    }
+	@ApiOperation(value = "Dokumentin tallennus")
+	@PUT
+	@Path("/tallenna")
+	@Consumes("application/octet-stream")
+	@Override
+	public void tallenna(@QueryParam("filename") String filename,
+			@QueryParam("expirationDate") Long expirationDate,
+			@QueryParam("tags") List<String> tags,
+			@QueryParam("mimeType") String mimeType, InputStream filedata) {
+		tags = addUserAsTag(tags);
+		if (tags == null) {
+			tags = Collections.emptyList();
+		}
+		if (mimeType == null) {
+			mimeType = MimeTypeUtil.guessMimeType(filename);
+		}
+		LOG.info("Filename {}, date {}, tags {} and stream {}", new Object[] {
+				filename, expirationDate, Arrays.toString(tags.toArray()),
+				filedata });
+		documentDao.put(new FileDescription(filename, tags, new DateTime(
+				expirationDate).toDate(), mimeType), filedata);
+	}
 
-    @ApiOperation(value = "Viestin tallentaminen käyttäjätunnuksella")
-    @PUT
-    @Path("/viesti")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Override
-    public void viesti(Message message) {
-        documentDao.put(
-                new FileDescription(message.getMessage(), addUserAsTag(message.getTags()), message.getExpirationDate(),
-                        "text/plain"), new ByteArrayInputStream(new byte[] {}));
-    }
+	@ApiOperation(value = "Viestin tallentaminen käyttäjätunnuksella")
+	@PUT
+	@Path("/viesti")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Override
+	public void viesti(Message message) {
+		documentDao.put(new FileDescription(message.getMessage(),
+				addUserAsTag(message.getTags()), message.getExpirationDate(),
+				"text/plain"), new ByteArrayInputStream(new byte[] {}));
+	}
 
-    @ApiOperation(value = "Tyhjentaa vanhentuneet dokumentit tietokannasta. Koostepalvelu kutsuu toimintoa. "
-            + "Tarkoitus on etta dokumenttipalvelu on mahdollisimman passiivinen.")
-    @PUT
-    @Path("/tyhjenna")
-    public void tyhjenna() {
-        flushDao.flush();
-    }
+	@ApiOperation(value = "Tyhjentaa vanhentuneet dokumentit tietokannasta. Koostepalvelu kutsuu toimintoa. "
+			+ "Tarkoitus on etta dokumenttipalvelu on mahdollisimman passiivinen.")
+	@PUT
+	@Path("/tyhjenna")
+	public void tyhjenna() {
+		flushDao.flush();
+	}
 
-    private List<String> addUserAsTag(Collection<String> tags) {
-        List<String> s = Lists.newArrayList();
-        if (tags != null) {
-            s.addAll(tags);
-        }
-        s.add(getUsername());
-        return s;
-    }
+	private List<String> addUserAsTag(Collection<String> tags) {
+		List<String> s = Lists.newArrayList();
+		if (tags != null) {
+			s.addAll(tags);
+		}
+		s.add(getUsername());
+		return s;
+	}
 
-    private String getUsername() {
-        try {
-            return SecurityContextHolder.getContext().getAuthentication().getName();
-        } catch (NullPointerException e) {
+	private String getUsername() {
+		try {
+			return SecurityContextHolder.getContext().getAuthentication()
+					.getName();
+		} catch (NullPointerException e) {
 
-        }
-        // this is for unit tests
-        return "<< not authenticated >>"; // <- is not possible in production
-                                          // <prop
-                                          // key="spring_security_default_access">isAuthenticated()</prop>
-    }
+		}
+		// this is for unit tests
+		return "<< not authenticated >>"; // <- is not possible in production
+											// <prop
+											// key="spring_security_default_access">isAuthenticated()</prop>
+	}
 
 }
