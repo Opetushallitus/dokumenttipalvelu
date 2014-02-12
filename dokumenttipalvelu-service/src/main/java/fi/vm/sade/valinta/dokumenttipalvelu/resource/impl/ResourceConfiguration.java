@@ -19,13 +19,6 @@ public class ResourceConfiguration extends ResourceConfig {
 	public ResourceConfiguration() {
 		// packages("fi.vm.sade.valinta.dokumenttipalvelu.resource.impl.DokumenttiResourceImpl");
 		// json output and input
-		register(JacksonFeature.class);
-		// register(MultiPartFeature.class);
-
-		register(DokumenttiResourceImpl.class);
-		/**
-		 * CORS Filter
-		 */
 		register(new ContainerResponseFilter() {
 
 			@Override
@@ -36,6 +29,15 @@ public class ResourceConfiguration extends ResourceConfig {
 						"*");
 			}
 		});
+
+		register(JacksonFeature.class);
+		// register(MultiPartFeature.class);
+
+		register(DokumenttiResourceImpl.class);
+		/**
+		 * CORS Filter
+		 */
+
 		registerInstances(
 				new com.wordnik.swagger.jaxrs.listing.ResourceListingProvider(),
 				new com.wordnik.swagger.jaxrs.listing.ApiDeclarationProvider());
