@@ -85,7 +85,8 @@ public class DokumenttiResourceImpl implements DokumenttiResource {
 	@Path("/tallenna")
 	@Consumes("application/octet-stream")
 	@Override
-	public void tallenna(@QueryParam("filename") String filename,
+	public void tallenna(@QueryParam("id") String id,
+			@QueryParam("filename") String filename,
 			@QueryParam("expirationDate") Long expirationDate,
 			@QueryParam("tags") List<String> tags,
 			@QueryParam("mimeType") String mimeType, InputStream filedata) {
@@ -96,10 +97,11 @@ public class DokumenttiResourceImpl implements DokumenttiResource {
 		if (mimeType == null) {
 			mimeType = MimeTypeUtil.guessMimeType(filename);
 		}
-		LOG.info("Filename {}, date {}, tags {} and stream {}", new Object[] {
-				filename, expirationDate, Arrays.toString(tags.toArray()),
-				filedata });
-		documentDao.put(new FileDescription(filename, tags, new DateTime(
+		LOG.info(
+				"Id {}, Filename {}, date {}, tags {} and stream {}",
+				new Object[] { id, filename, expirationDate,
+						Arrays.toString(tags.toArray()), filedata });
+		documentDao.put(new FileDescription(id, filename, tags, new DateTime(
 				expirationDate).toDate(), mimeType), filedata);
 	}
 
