@@ -29,22 +29,22 @@
 </repositories>
 	<dependencies>
 		<dependency>
-			<artifactId>commons-io</artifactId>
-			<groupId>commons-io</groupId>
-			<version>2.4</version>
+            <artifactId>commons-io</artifactId>
+            <groupId>commons-io</groupId>
+            <version>2.4</version>
 		</dependency>
 		<dependency>
-            <groupId>org.jasig.cas</groupId>
+            <groupId>org.jasig.cas.client</groupId>
             <artifactId>cas-client-support-distributed-ehcache</artifactId>
-            <version>3.1.10</version>
+            <version>3.1.12</version>
             <exclusions>
                 <exclusion>
                    <groupId>net.sf.ehcache</groupId>
-		   <artifactId>ehcache</artifactId>
-		</exclusion>
+                   <artifactId>ehcache</artifactId>
+                </exclusion>
                 <exclusion>
                 	<artifactId>commons-logging</artifactId>
-                	<groupId>commons-logging</groupId>
+                    <groupId>commons-logging</groupId>
                 </exclusion>
             </exclusions>
 	</dependency>
