@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -11,6 +12,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import fi.vm.sade.valinta.dokumenttipalvelu.dto.Message;
@@ -57,7 +59,8 @@ public interface DokumenttiResource {
 	 */
 	@GET
 	@Path("/lataa/{documentid}")
-	InputStream lataa(@PathParam("documentid") String documentId);
+	InputStream lataa(@PathParam("documentid") String documentId,
+			@Context HttpServletResponse servlerResponse);
 
 	/**
 	 * @param filename

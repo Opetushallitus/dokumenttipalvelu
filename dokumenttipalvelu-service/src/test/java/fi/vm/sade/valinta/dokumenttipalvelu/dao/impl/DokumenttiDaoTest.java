@@ -39,64 +39,72 @@ import fi.vm.sade.valinta.dokumenttipalvelu.testcontext.DokumenttiConfiguration;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class DokumenttiDaoTest {
 
-    private static final String TEST_PDF = "addresslabels.pdf";
-    private static final String TEST_PDF2 = "hyvaksymiskirje.pdf";
-    private static final String VIESTINTAPALVELU = "viestintapalvelu";
-    private static final String OSOITETARRAT = "osoitetarrat";
-    private static final String HYVAKSYMISKIRJE = "hyvaksymiskirje";
+	private static final String TEST_PDF = "addresslabels.pdf";
+	private static final String TEST_PDF2 = "hyvaksymiskirje.pdf";
+	private static final String VIESTINTAPALVELU = "viestintapalvelu";
+	private static final String OSOITETARRAT = "osoitetarrat";
+	private static final String HYVAKSYMISKIRJE = "hyvaksymiskirje";
 
-    @Autowired
-    private DocumentDao dokumenttiDao;
+	@Autowired
+	private DocumentDao dokumenttiDao;
 
-    @Autowired
-    private FlushDao flushDao;
+	@Autowired
+	private FlushDao flushDao;
 
-    private MetaData metaOsoitekirje;
-    private MetaData metaHyvaksymiskirje;
+	private MetaData metaOsoitekirje;
+	private MetaData metaHyvaksymiskirje;
 
-    @Before
-    public void testPut() throws IOException {
-        // expires now
-        metaOsoitekirje = dokumenttiDao.put(new FileDescription(TEST_PDF,
-                Arrays.asList(VIESTINTAPALVELU, OSOITETARRAT), now().toDate(), ""), new ClassPathResource(TEST_PDF)
-                .getInputStream());
-        // expires not during this test
-        metaHyvaksymiskirje = dokumenttiDao.put(
-                new FileDescription(TEST_PDF2, Arrays.asList(VIESTINTAPALVELU, HYVAKSYMISKIRJE), now().plusYears(1)
-                        .toDate(), ""), new ClassPathResource(TEST_PDF).getInputStream());
-    }
+	@Before
+	public void testPut() throws IOException {
+		// expires now
+		metaOsoitekirje = dokumenttiDao.put(new FileDescription(TEST_PDF,
+				Arrays.asList(VIESTINTAPALVELU, OSOITETARRAT), now().toDate(),
+				""), new ClassPathResource(TEST_PDF).getInputStream());
+		// expires not during this test
+		metaHyvaksymiskirje = dokumenttiDao.put(new FileDescription(TEST_PDF2,
+				Arrays.asList(VIESTINTAPALVELU, HYVAKSYMISKIRJE), now()
+						.plusYears(1).toDate(), ""), new ClassPathResource(
+				TEST_PDF).getInputStream());
+	}
 
-    @Test
-    public void testGetMetaData() throws IOException {
-        assertTrue(IOUtils.contentEquals(new ClassPathResource(TEST_PDF).getInputStream(),
-                dokumenttiDao.get(metaOsoitekirje.getDocumentId())));
-        assertEquals(Arrays.asList(VIESTINTAPALVELU, OSOITETARRAT), metaOsoitekirje.getTags());
-    }
+	@Test
+	public void testGetMetaData() throws IOException {
+		assertTrue(IOUtils.contentEquals(new ClassPathResource(TEST_PDF)
+				.getInputStream(),
+				dokumenttiDao.get(metaOsoitekirje.getDocumentId()).getEntity()));
+		assertEquals(Arrays.asList(VIESTINTAPALVELU, OSOITETARRAT),
+				metaOsoitekirje.getTags());
+	}
 
-    @Test
-    public void testGetAll() throws IOException {
-        Set<?> ids = Sets.newHashSet(Collections2.transform(dokumenttiDao.getAll(), new Function<MetaData, String>() {
-            public String apply(MetaData data) {
-                return data.getDocumentId();
-            }
-        }));
-        assertTrue(ids.containsAll(Arrays.asList(metaOsoitekirje.getDocumentId(), metaHyvaksymiskirje.getDocumentId())));
-    }
+	@Test
+	public void testGetAll() throws IOException {
+		Set<?> ids = Sets.newHashSet(Collections2.transform(
+				dokumenttiDao.getAll(), new Function<MetaData, String>() {
+					public String apply(MetaData data) {
+						return data.getDocumentId();
+					}
+				}));
+		assertTrue(ids.containsAll(Arrays.asList(
+				metaOsoitekirje.getDocumentId(),
+				metaHyvaksymiskirje.getDocumentId())));
+	}
 
-    @Test
-    public void testGetAllWithQuery() throws IOException {
-        Collection<MetaData> m0 = dokumenttiDao.getAll(Arrays.asList(VIESTINTAPALVELU, OSOITETARRAT));
-        Collection<MetaData> m1 = dokumenttiDao.getAll(Arrays.asList(VIESTINTAPALVELU));
-        assertFalse(m0.isEmpty());
-        assertFalse(m1.isEmpty());
-        assertTrue(m0.size() < m1.size());
-    }
+	@Test
+	public void testGetAllWithQuery() throws IOException {
+		Collection<MetaData> m0 = dokumenttiDao.getAll(Arrays.asList(
+				VIESTINTAPALVELU, OSOITETARRAT));
+		Collection<MetaData> m1 = dokumenttiDao.getAll(Arrays
+				.asList(VIESTINTAPALVELU));
+		assertFalse(m0.isEmpty());
+		assertFalse(m1.isEmpty());
+		assertTrue(m0.size() < m1.size());
+	}
 
-    @After
-    public void testRemovingExpiredDocuments() {
-        Collection<MetaData> m0 = dokumenttiDao.getAll();
-        flushDao.flush();
-        Collection<MetaData> m1 = dokumenttiDao.getAll();
-        assertTrue(m0.size() > m1.size());
-    }
+	@After
+	public void testRemovingExpiredDocuments() {
+		Collection<MetaData> m0 = dokumenttiDao.getAll();
+		flushDao.flush();
+		Collection<MetaData> m1 = dokumenttiDao.getAll();
+		assertTrue(m0.size() > m1.size());
+	}
 }

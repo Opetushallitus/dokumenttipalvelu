@@ -29,6 +29,7 @@ import com.mongodb.gridfs.GridFSInputFile;
 
 import fi.vm.sade.valinta.dokumenttipalvelu.dao.DocumentDao;
 import fi.vm.sade.valinta.dokumenttipalvelu.dao.FlushDao;
+import fi.vm.sade.valinta.dokumenttipalvelu.dto.ContentTypeAndEntity;
 import fi.vm.sade.valinta.dokumenttipalvelu.dto.FileDescription;
 import fi.vm.sade.valinta.dokumenttipalvelu.dto.MetaData;
 
@@ -119,10 +120,12 @@ public class DocumentDaoImpl implements DocumentDao, FlushDao {
 	}
 
 	@Override
-	public InputStream get(String documentId) {
+	public ContentTypeAndEntity get(String documentId) {
 		GridFSDBFile gridFSFile = documents.findOne(new BasicDBObject("_id",
 				documentId));
-		return gridFSFile.getInputStream();
+		return new ContentTypeAndEntity(gridFSFile.getInputStream(),
+				gridFSFile.getContentType(), gridFSFile.getFilename(),
+				gridFSFile.getLength());
 	}
 
 	@Override

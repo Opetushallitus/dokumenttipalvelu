@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -14,6 +15,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.joda.time.DateTime;
@@ -30,6 +32,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
 
 import fi.vm.sade.valinta.dokumenttipalvelu.dao.DocumentDao;
 import fi.vm.sade.valinta.dokumenttipalvelu.dao.FlushDao;
+import fi.vm.sade.valinta.dokumenttipalvelu.dto.ContentTypeAndEntity;
 import fi.vm.sade.valinta.dokumenttipalvelu.dto.FileDescription;
 import fi.vm.sade.valinta.dokumenttipalvelu.dto.Message;
 import fi.vm.sade.valinta.dokumenttipalvelu.dto.MetaData;
@@ -74,10 +77,17 @@ public class DokumenttiResourceImpl implements DokumenttiResource {
 
 	@ApiOperation(value = "Dokumentin lataus tunnisteella", response = InputStream.class)
 	@GET
+	// @Produces("application/pdf")
 	@Path("/lataa/{documentid}")
 	@Override
-	public InputStream lataa(@PathParam("documentid") String documentId) {
-		return documentDao.get(documentId);
+	public InputStream lataa(@PathParam("documentid") String documentId,
+			@Context HttpServletResponse servlerResponse) {
+		ContentTypeAndEntity c = documentDao.get(documentId);
+		servlerResponse.setContentType(c.getContentType());
+		servlerResponse.setHeader("Content-Disposition",
+				"attachment; filename=\"" + c.getFilename() + "\"");
+		servlerResponse.setHeader("Content-Length", "" + c.getLength());
+		return c.getEntity();
 	}
 
 	@ApiOperation(value = "Dokumentin tallennus")
