@@ -1,13 +1,14 @@
 package fi.vm.sade.valinta.dokumenttipalvelu.resource.impl;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -15,9 +16,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 
+import org.apache.commons.io.IOUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,14 +84,26 @@ public class DokumenttiResourceImpl implements DokumenttiResource {
 	// @Produces("application/pdf")
 	@Path("/lataa/{documentid}")
 	@Override
-	public InputStream lataa(@PathParam("documentid") String documentId,
-			@Context HttpServletResponse servlerResponse) {
-		ContentTypeAndEntity c = documentDao.get(documentId);
-		servlerResponse.setContentType(c.getContentType());
-		servlerResponse.setHeader("Content-Disposition",
-				"attachment; filename=\"" + c.getFilename() + "\"");
-		servlerResponse.setHeader("Content-Length", "" + c.getLength());
-		return c.getEntity();
+	public Response lataa(@PathParam("documentid") String documentId) {
+		final ContentTypeAndEntity c = documentDao.get(documentId);
+		StreamingOutput stream = new StreamingOutput() {
+			@Override
+			public void write(OutputStream os) throws WebApplicationException,
+					IOException {
+				// Writer writer = new BufferedWriter(new
+				// OutputStreamWriter(os));
+				// writer.write("test");
+				// writer.flush();
+				IOUtils.copy(c.getEntity(), os);
+			}
+		};
+		return Response
+				.ok(stream)
+				.header("Content-Length", "" + c.getLength())
+				.header("Content-Type", c.getContentType())
+				.header("Content-Disposition",
+						"attachment; filename=\"" + c.getFilename() + "\"")
+				.build();
 	}
 
 	@ApiOperation(value = "Dokumentin tallennus")
