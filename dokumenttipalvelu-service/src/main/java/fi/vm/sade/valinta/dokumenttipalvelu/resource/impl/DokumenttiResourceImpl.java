@@ -43,7 +43,6 @@ import fi.vm.sade.valinta.dokumenttipalvelu.dto.MetaData;
 import fi.vm.sade.valinta.dokumenttipalvelu.resource.DokumenttiResource;
 
 @Api(value = "/dokumentit", description = "Dokumenttipalvelun rajapinta")
-@PreAuthorize("isAuthenticated()")
 @Component
 public class DokumenttiResourceImpl implements DokumenttiResource {
 
@@ -55,6 +54,7 @@ public class DokumenttiResourceImpl implements DokumenttiResource {
 	@Autowired
 	private FlushDao flushDao;
 
+	@PreAuthorize("isAuthenticated()")
 	@ApiOperation(value = "Dokumenttien haku käyttäjätunnuksella", response = Collection.class)
 	@GET
 	@Path("/hae")
@@ -64,12 +64,12 @@ public class DokumenttiResourceImpl implements DokumenttiResource {
 		return documentDao.getAll(addUserAsTag(tags));
 	}
 
+	@PreAuthorize("hasAnyRole('ROLE_APP_VALINTAPERUSTEET_CRUD_1.2.246.562.10.00000000001')")
 	@ApiOperation(value = "Suojattu operaatio kaikkien dokumenttien hakuun", response = Collection.class)
 	@GET
 	@Path("/yllapitohaku")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Override
-	@PreAuthorize("hasAnyRole('ROLE_APP_VALINTAPERUSTEET_CRUD_1.2.246.562.10.00000000001')")
 	public Collection<MetaData> yllapitohaku(
 			@PathParam("documentid") List<String> tags) {
 		if (tags == null || tags.size() == 0) {
@@ -116,19 +116,29 @@ public class DokumenttiResourceImpl implements DokumenttiResource {
 			@QueryParam("expirationDate") Long expirationDate,
 			@QueryParam("tags") List<String> tags,
 			@QueryParam("mimeType") String mimeType, InputStream filedata) {
-		tags = addUserAsTag(tags);
-		if (tags == null) {
-			tags = Collections.emptyList();
+		try {
+			LOG.error("TALLEEEE");
+			tags = addUserAsTag(tags);
+			if (tags == null) {
+				tags = Collections.emptyList();
+			}
+			if (mimeType == null) {
+				mimeType = MimeTypeUtil.guessMimeType(filename);
+			}
+			LOG.info(
+					"Id {}, Filename {}, date {}, tags {} and stream {}",
+					new Object[] { id, filename, expirationDate,
+							Arrays.toString(tags.toArray()), filedata });
+			documentDao.put(new FileDescription(id, filename, tags,
+					new DateTime(expirationDate).toDate(), mimeType), filedata);
+
+		} catch (Exception e) {
+			LOG.error(
+					"Onkohan MongoDB-yhteys konfiguroitu oikein? Tallennus epäonnistui: {} {} {}",
+					e.getMessage(), e.getCause(),
+					Arrays.toString(e.getStackTrace()));
+			throw new RuntimeException(e);
 		}
-		if (mimeType == null) {
-			mimeType = MimeTypeUtil.guessMimeType(filename);
-		}
-		LOG.info(
-				"Id {}, Filename {}, date {}, tags {} and stream {}",
-				new Object[] { id, filename, expirationDate,
-						Arrays.toString(tags.toArray()), filedata });
-		documentDao.put(new FileDescription(id, filename, tags, new DateTime(
-				expirationDate).toDate(), mimeType), filedata);
 	}
 
 	@ApiOperation(value = "Viestin tallentaminen käyttäjätunnuksella")

@@ -73,7 +73,7 @@ public interface DokumenttiResource {
 	@PUT
 	@Path("/tallenna")
 	@Consumes("application/octet-stream")
-	public void tallenna(@QueryParam("id") String id,
+	void tallenna(@QueryParam("id") String id,
 			@QueryParam("filename") String filename,
 			@QueryParam("expirationDate") Long expirationDate,
 			@QueryParam("tags") List<String> tags,
