@@ -117,7 +117,6 @@ public class DokumenttiResourceImpl implements DokumenttiResource {
 			@QueryParam("tags") List<String> tags,
 			@QueryParam("mimeType") String mimeType, InputStream filedata) {
 		try {
-			LOG.error("TALLEEEE");
 			tags = addUserAsTag(tags);
 			if (tags == null) {
 				tags = Collections.emptyList();
