@@ -159,7 +159,89 @@ public class DokumenttiResourceImpl implements DokumenttiResource {
 		flushDao.flush();
 	}
 
-	private List<String> addUserAsTag(Collection<String> tags) {
+    @Override
+    @PreAuthorize("hasAnyRole('ROLE_APP_SIJOITTELU_READ','ROLE_APP_SIJOITTELU_READ_UPDATE','ROLE_APP_SIJOITTELU_CRUD')")
+    @GET
+    @Path("/osoitetarrat/{hakukohdeOid}")
+    public Response osoitetarrat(String hakukohdeOid) {
+        final String name = "osoitetarrat_" + hakukohdeOid + ".pdf";
+        final ContentTypeAndEntity c = documentDao.getByName(name);
+        StreamingOutput stream = new StreamingOutput() {
+            @Override
+            public void write(OutputStream os) throws WebApplicationException,
+                    IOException {
+                // Writer writer = new BufferedWriter(new
+                // OutputStreamWriter(os));
+                // writer.write("test");
+                // writer.flush();
+                IOUtils.copy(c.getEntity(), os);
+            }
+        };
+        return Response
+                .ok(stream)
+                .header("Content-Length", "" + c.getLength())
+                .header("Content-Type", c.getContentType())
+                .header("Content-Disposition",
+                        "attachment; filename=\"" + c.getFilename() + "\"")
+                .build();
+
+    }
+
+    @Override
+    @PreAuthorize("hasAnyRole('ROLE_APP_SIJOITTELU_READ','ROLE_APP_SIJOITTELU_READ_UPDATE','ROLE_APP_SIJOITTELU_CRUD')")
+    @GET
+    @Path("/hyvaksymiskirjeet/{hakukohdeOid}")
+    public Response hyvaksymiskirjeet(String hakukohdeOid) {
+        final String name = "hyvaksymiskirje_" + hakukohdeOid + ".pdf";
+        final ContentTypeAndEntity c = documentDao.getByName(name);
+        StreamingOutput stream = new StreamingOutput() {
+            @Override
+            public void write(OutputStream os) throws WebApplicationException,
+                    IOException {
+                // Writer writer = new BufferedWriter(new
+                // OutputStreamWriter(os));
+                // writer.write("test");
+                // writer.flush();
+                IOUtils.copy(c.getEntity(), os);
+            }
+        };
+        return Response
+                .ok(stream)
+                .header("Content-Length", "" + c.getLength())
+                .header("Content-Type", c.getContentType())
+                .header("Content-Disposition",
+                        "attachment; filename=\"" + c.getFilename() + "\"")
+                .build();
+    }
+
+    @Override
+    @PreAuthorize("hasAnyRole('ROLE_APP_SIJOITTELU_READ','ROLE_APP_SIJOITTELU_READ_UPDATE','ROLE_APP_SIJOITTELU_CRUD')")
+    @GET
+    @Path("/sijoitteluntulokset/{hakukohdeOid}")
+    public Response sijoitteluntulokset(String hakukohdeOid) {
+        final String name = "sijoitteluntulos_" + hakukohdeOid + ".xls";
+        final ContentTypeAndEntity c = documentDao.getByName(name);
+        StreamingOutput stream = new StreamingOutput() {
+            @Override
+            public void write(OutputStream os) throws WebApplicationException,
+                    IOException {
+                // Writer writer = new BufferedWriter(new
+                // OutputStreamWriter(os));
+                // writer.write("test");
+                // writer.flush();
+                IOUtils.copy(c.getEntity(), os);
+            }
+        };
+        return Response
+                .ok(stream)
+                .header("Content-Length", "" + c.getLength())
+                .header("Content-Type", c.getContentType())
+                .header("Content-Disposition",
+                        "attachment; filename=\"" + c.getFilename() + "\"")
+                .build();
+    }
+
+    private List<String> addUserAsTag(Collection<String> tags) {
 		List<String> s = Lists.newArrayList();
 		if (tags != null) {
 			s.addAll(tags);

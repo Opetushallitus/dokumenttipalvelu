@@ -92,4 +92,16 @@ public interface DokumenttiResource {
 	@PUT
 	@Path("/tyhjenna")
 	public void tyhjenna();
+
+    @GET
+    @Path("/osoitetarrat/{hakukohdeOid}")
+    Response osoitetarrat(@PathParam("hakukohdeOid") String hakukohdeOid);
+
+    @GET
+    @Path("/hyvaksymiskirjeet/{hakukohdeOid}")
+    Response hyvaksymiskirjeet(@PathParam("hakukohdeOid") String hakukohdeOid);
+
+    @GET
+    @Path("/sijoitteluntulokset/{hakukohdeOid}")
+    Response sijoitteluntulokset(@PathParam("hakukohdeOid") String hakukohdeOid);
 }

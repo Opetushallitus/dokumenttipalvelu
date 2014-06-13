@@ -20,6 +20,8 @@ public interface DocumentDao {
 
 	ContentTypeAndEntity get(String documentId);
 
+    ContentTypeAndEntity getByName(String filename);
+
 	MetaData put(FileDescription description, InputStream documentData);
 
 }

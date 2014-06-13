@@ -135,7 +135,16 @@ public class DocumentDaoImpl implements DocumentDao, FlushDao {
 				gridFSFile.getLength());
 	}
 
-	@Override
+    @Override
+    public ContentTypeAndEntity getByName(String filename) {
+        GridFSDBFile gridFSFile = documents.findOne(new BasicDBObject("filename",
+                filename));
+        return new ContentTypeAndEntity(gridFSFile.getInputStream(),
+                gridFSFile.getContentType(), gridFSFile.getFilename(),
+                gridFSFile.getLength());
+    }
+
+    @Override
 	public MetaData put(FileDescription description, InputStream documentData) {
 		String filename = description.getFilename();
 		GridFSInputFile file = documents.createFile(documentData, filename);
