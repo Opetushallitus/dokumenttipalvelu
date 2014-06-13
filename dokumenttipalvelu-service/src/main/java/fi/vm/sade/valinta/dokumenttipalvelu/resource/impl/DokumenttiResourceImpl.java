@@ -163,7 +163,7 @@ public class DokumenttiResourceImpl implements DokumenttiResource {
     @PreAuthorize("hasAnyRole('ROLE_APP_SIJOITTELU_READ','ROLE_APP_SIJOITTELU_READ_UPDATE','ROLE_APP_SIJOITTELU_CRUD')")
     @GET
     @Path("/osoitetarrat/{hakukohdeOid}")
-    public Response osoitetarrat(String hakukohdeOid) {
+    public Response osoitetarrat(@PathParam("hakukohdeOid") String hakukohdeOid) {
         final String name = "osoitetarrat_" + hakukohdeOid + ".pdf";
         final ContentTypeAndEntity c = documentDao.getByName(name);
         StreamingOutput stream = new StreamingOutput() {
@@ -191,7 +191,7 @@ public class DokumenttiResourceImpl implements DokumenttiResource {
     @PreAuthorize("hasAnyRole('ROLE_APP_SIJOITTELU_READ','ROLE_APP_SIJOITTELU_READ_UPDATE','ROLE_APP_SIJOITTELU_CRUD')")
     @GET
     @Path("/hyvaksymiskirjeet/{hakukohdeOid}")
-    public Response hyvaksymiskirjeet(String hakukohdeOid) {
+    public Response hyvaksymiskirjeet(@PathParam("hakukohdeOid") String hakukohdeOid) {
         final String name = "hyvaksymiskirje_" + hakukohdeOid + ".pdf";
         final ContentTypeAndEntity c = documentDao.getByName(name);
         StreamingOutput stream = new StreamingOutput() {
@@ -218,7 +218,7 @@ public class DokumenttiResourceImpl implements DokumenttiResource {
     @PreAuthorize("hasAnyRole('ROLE_APP_SIJOITTELU_READ','ROLE_APP_SIJOITTELU_READ_UPDATE','ROLE_APP_SIJOITTELU_CRUD')")
     @GET
     @Path("/sijoitteluntulokset/{hakukohdeOid}")
-    public Response sijoitteluntulokset(String hakukohdeOid) {
+    public Response sijoitteluntulokset(@PathParam("hakukohdeOid") String hakukohdeOid) {
         final String name = "sijoitteluntulos_" + hakukohdeOid + ".xls";
         final ContentTypeAndEntity c = documentDao.getByName(name);
         StreamingOutput stream = new StreamingOutput() {
