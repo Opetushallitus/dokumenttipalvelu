@@ -135,23 +135,31 @@ public class DocumentDaoImpl implements DocumentDao, FlushDao {
 				gridFSFile.getLength());
 	}
 
-    @Override
-    public ContentTypeAndEntity getByName(String filename) {
-        List<GridFSDBFile> gridFSFiles = documents.find(new BasicDBObject("filename",
-                filename));
+	@Override
+	public ContentTypeAndEntity getByName(String filename) {
+		List<GridFSDBFile> gridFSFiles = documents.find(new BasicDBObject(
+				"filename", filename));
 
-        if (gridFSFiles.isEmpty()) {
-            return null;
-        }
+		if (gridFSFiles.isEmpty()) {
+			return null;
+		}
 
-        GridFSDBFile gridFSFile = gridFSFiles.get(gridFSFiles.size() - 1);
+		GridFSDBFile gridFSFile = gridFSFiles.get(gridFSFiles.size() - 1);
 
-        return new ContentTypeAndEntity(gridFSFile.getInputStream(),
-                gridFSFile.getContentType(), gridFSFile.getFilename(),
-                gridFSFile.getLength());
-    }
+		return new ContentTypeAndEntity(gridFSFile.getInputStream(),
+				gridFSFile.getContentType(), gridFSFile.getFilename(),
+				gridFSFile.getLength());
+	}
 
-    @Override
+	@Override
+	public Collection<MetaData> getMetaDataByName(String filename) {
+		Collection<GridFSDBFile> dbojs = this.documents.find(new BasicDBObject(
+				new BasicDBObject("filename", filename)),
+				sortByUploadDateDescending());
+		return transform(dbojs);
+	}
+
+	@Override
 	public MetaData put(FileDescription description, InputStream documentData) {
 		String filename = description.getFilename();
 		GridFSInputFile file = documents.createFile(documentData, filename);
