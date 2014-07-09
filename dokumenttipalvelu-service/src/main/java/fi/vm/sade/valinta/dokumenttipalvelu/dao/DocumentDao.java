@@ -18,9 +18,11 @@ public interface DocumentDao {
 
 	Collection<MetaData> getAll(Collection<String> tags);
 
+	Collection<MetaData> getMetaDataByName(String filename);
+
 	ContentTypeAndEntity get(String documentId);
 
-    ContentTypeAndEntity getByName(String filename);
+	ContentTypeAndEntity getByName(String filename);
 
 	MetaData put(FileDescription description, InputStream documentData);
 
