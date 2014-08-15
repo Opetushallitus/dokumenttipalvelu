@@ -54,15 +54,26 @@
 		</dependency>
 		<!-- GridFS kanta yhteys -->
 		<dependency>
-			<groupId>com.google.code.morphia</groupId>
+			<groupId>org.mongodb.morphia</groupId>
 			<artifactId>morphia</artifactId>
-			<version>0.102</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongo-java-driver</artifactId>
-			<version>2.11.2</version>
 		</dependency>
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib-nodep</artifactId>
+            <type>jar</type>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.thoughtworks.proxytoys</groupId>
+            <artifactId>proxytoys</artifactId>
+            <type>jar</type>
+            <optional>true</optional>
+        </dependency>
+
 		<!-- Logging <dependency> <groupId>ch.qos.logback</groupId> <artifactId>logback-classic</artifactId> 
 			<version>1.0.13</version> <scope>test</scope> </dependency -->
 		<dependency>
