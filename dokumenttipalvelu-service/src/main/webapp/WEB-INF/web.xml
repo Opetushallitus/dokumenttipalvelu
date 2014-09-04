@@ -36,20 +36,6 @@
         <servlet-name>Jersey REST Service</servlet-name>
         <url-pattern>/resources/*</url-pattern>
     </servlet-mapping>
-    <!-- servlet>
-        <servlet-name>Jersey REST Service</servlet-name>
-        <servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>
-        <init-param>
-            <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
-            <param-value>true</param-value>
-        </init-param>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Jersey REST Service</servlet-name>
-        <url-pattern>/resources/*</url-pattern>
-    </servlet-mapping -->
-
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>
