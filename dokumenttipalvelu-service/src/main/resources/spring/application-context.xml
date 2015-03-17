@@ -2,13 +2,18 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:util="http://www.springframework.org/schema/util" xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+       xmlns:http="http://cxf.apache.org/transports/http/configuration"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
-
+         http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
+         http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
          http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
          http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
     <context:annotation-config/>
+
+    <import resource="classpath:META-INF/cxf/cxf.xml" />
+    <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
     <context:component-scan base-package="fi.vm.sade.valinta.dokumenttipalvelu.dao.impl"/>
     <context:component-scan base-package="fi.vm.sade.valinta.dokumenttipalvelu.resource.impl"/>
 
@@ -42,4 +47,27 @@
         <property name="title" value="Swagger API documentation"/>
         <property name="scan" value="true"/>
     </bean>
+    <bean id="swaggerResourceJSON" class="com.wordnik.swagger.jaxrs.listing.ApiListingResourceJSON"/>
+
+    <!-- Swagger writers -->
+    <bean id="resourceWriter" class="com.wordnik.swagger.jaxrs.listing.ResourceListingProvider" scope="singleton"/>
+    <bean id="apiWriter" class="com.wordnik.swagger.jaxrs.listing.ApiDeclarationProvider" scope="singleton"/>
+
+    <bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider" />
+    <bean id="cors-filter" class="fi.vm.sade.valinta.dokumenttipalvelu.resource.impl.filter.CorsResponseFilter"/>
+
+
+    <jaxrs:server id="dokumenttipalvelunResurssit">
+        <jaxrs:serviceBeans>
+            <ref bean="DokumenttiResourceImpl"/>
+            <ref bean="swaggerResourceJSON"/>
+        </jaxrs:serviceBeans>
+        <jaxrs:providers>
+            <ref bean="jsonProvider" />
+            <ref bean="cors-filter" />
+            <ref bean="resourceWriter" />
+            <ref bean="apiWriter" />
+        </jaxrs:providers>
+    </jaxrs:server>
+
 </beans>

@@ -43,7 +43,7 @@ import fi.vm.sade.valinta.dokumenttipalvelu.dto.MetaData;
 import fi.vm.sade.valinta.dokumenttipalvelu.resource.DokumenttiResource;
 
 @Api(value = "/dokumentit", description = "Dokumenttipalvelun rajapinta")
-@Component
+@Component("DokumenttiResourceImpl")
 public class DokumenttiResourceImpl implements DokumenttiResource {
 
 	private static final Logger LOG = LoggerFactory

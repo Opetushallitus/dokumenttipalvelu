@@ -261,21 +261,6 @@
 			<scope>test</scope>
 		</dependency>
 		<!-- Jersey, REST, Json -->
-		<dependency>
-			<groupId>org.glassfish.jersey.media</groupId>
-			<artifactId>jersey-media-multipart</artifactId>
-			<version>${jersey.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.media</groupId>
-			<artifactId>jersey-media-json-jackson</artifactId>
-			<version>${jersey.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.ext</groupId>
-			<artifactId>jersey-spring3</artifactId>
-			<version>${jersey.version}</version>
-		</dependency>
 		<!-- CXF -->
         <dependency>
             <groupId>org.apache.cxf</groupId>
@@ -313,6 +298,16 @@
 			<groupId>com.wordnik</groupId>
 			<artifactId>swagger-jersey2-jaxrs_2.11</artifactId>
             <version>${swagger.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.glassfish.jersey.containers</groupId>
+					<artifactId>jersey-container-servlet-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.glassfish.jersey.media</groupId>
+					<artifactId>jersey-media-multipart</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>fi.vm.sade.dokumenttipalvelu</groupId>
