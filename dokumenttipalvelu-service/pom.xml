@@ -48,6 +48,13 @@
                 </exclusion>
             </exclusions>
 	</dependency>
+        <!-- Jersey, REST, Json -->
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-web-api</artifactId>
+            <version>6.0</version>
+            <scope>provided</scope>
+        </dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>

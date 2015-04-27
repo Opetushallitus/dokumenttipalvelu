@@ -60,6 +60,7 @@
     <jaxrs:server id="dokumenttipalvelunResurssit">
         <jaxrs:serviceBeans>
             <ref bean="DokumenttiResourceImpl"/>
+            <ref bean="SessionResourceImpl"/>
             <ref bean="swaggerResourceJSON"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
