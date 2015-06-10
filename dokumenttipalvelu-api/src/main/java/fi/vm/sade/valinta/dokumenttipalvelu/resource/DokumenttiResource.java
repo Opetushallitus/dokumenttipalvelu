@@ -48,19 +48,6 @@ public interface DokumenttiResource {
     @Path("/lataa/{documentid}")
     Response lataa(@PathParam("documentid") String documentId);
 
-<<<<<<< HEAD
-    /**
-     * @param expirationDate [OPTIONAL] DEFAULTS TO 24H
-     */
-    @PUT
-    @Path("/tallenna")
-    @Consumes("application/octet-stream")
-    void tallenna(@QueryParam("id") String id,
-                  @QueryParam("filename") String filename,
-                  @QueryParam("expirationDate") Long expirationDate,
-                  @QueryParam("tags") List<String> tags,
-                  @QueryParam("mimeType") String mimeType, InputStream filedata);
-=======
 	/**
 	 * @param filename
 	 * @param expirationDate
@@ -86,7 +73,6 @@ public interface DokumenttiResource {
 	@Consumes("text/plain")
 	String uudelleennimea(@PathParam("documentid") String documentId,
 				  String filename);
->>>>>>> hyväksymiskirjeiden generointi koko haulle
 
     @PUT
     @Path("/viesti")
