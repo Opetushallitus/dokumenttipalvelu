@@ -4,13 +4,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -54,6 +48,7 @@ public interface DokumenttiResource {
     @Path("/lataa/{documentid}")
     Response lataa(@PathParam("documentid") String documentId);
 
+<<<<<<< HEAD
     /**
      * @param expirationDate [OPTIONAL] DEFAULTS TO 24H
      */
@@ -65,6 +60,33 @@ public interface DokumenttiResource {
                   @QueryParam("expirationDate") Long expirationDate,
                   @QueryParam("tags") List<String> tags,
                   @QueryParam("mimeType") String mimeType, InputStream filedata);
+=======
+	/**
+	 * @param filename
+	 * @param expirationDate
+	 *            [OPTIONAL] DEFAULTS TO 24H
+	 * @param tags
+	 *            [OPTIONAL]
+	 * @param mimeType
+	 *            [OPTIONAL]
+	 * @param filedata
+	 */
+	@PUT
+	@Path("/tallenna")
+	@Consumes("application/octet-stream")
+	void tallenna(@QueryParam("id") String id,
+			@QueryParam("filename") String filename,
+			@QueryParam("expirationDate") Long expirationDate,
+			@QueryParam("tags") List<String> tags,
+			@QueryParam("mimeType") String mimeType,
+			InputStream filedata);
+
+	@PUT
+	@Path("/uudelleennimea/{documentid}")
+	@Consumes("text/plain")
+	String uudelleennimea(@PathParam("documentid") String documentId,
+				  String filename);
+>>>>>>> hyväksymiskirjeiden generointi koko haulle
 
     @PUT
     @Path("/viesti")
