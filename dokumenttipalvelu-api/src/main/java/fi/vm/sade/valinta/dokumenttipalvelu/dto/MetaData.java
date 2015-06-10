@@ -4,11 +4,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-/**
- * 
- * @author Jussi Jartamo
- * 
- */
 public class MetaData {
 
     private String mimeType;
@@ -18,7 +13,6 @@ public class MetaData {
     private List<String> tags; // viestintapalvelu,
                                // valintalaskentakoostepalvelu,
     // hyvaksymiskirje, jalkiohjauskirje, ...
-    // private Map<String, ? extends Object> data;
     private String size;
     private String md5;
     private Date expirationDate;
@@ -48,8 +42,6 @@ public class MetaData {
         return md5;
     }
 
-    // public Map<String, ? extends Object> getData() { return data; }
-
     public String getSize() {
         return size;
     }
@@ -73,5 +65,4 @@ public class MetaData {
     public String getMimeType() {
         return mimeType;
     }
-
 }

@@ -4,67 +4,51 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 
-/**
- * 
- * @author Jussi Jartamo
- * 
- */
 public class FileDescription {
+    private String filename;
+    private Collection<String> tags;
+    private Date expirationDate;
+    private String mimeType;
+    private String id;
 
-	// private static final int ONE_DAY = 1;
-	private String filename;
-	private Collection<String> tags;
-	private Date expirationDate;
-	private String mimeType;
-	private String id;
+    public FileDescription(String filename, Collection<String> tags, Date expirationDate, String mimeType) {
+        this.filename = filename;
+        this.tags = tags;
+        this.expirationDate = expirationDate;
+        this.mimeType = mimeType;
+        this.id = null;
+    }
 
-	// private Map<String, String> metaData = Collections.emptyMap();
+    public FileDescription(String id, String filename, Collection<String> tags, Date expirationDate, String mimeType) {
+        this.filename = filename;
+        this.tags = tags;
+        this.expirationDate = expirationDate;
+        this.mimeType = mimeType;
+        this.id = id;
+    }
 
-	public FileDescription(String filename, Collection<String> tags,
-			Date expirationDate, String mimeType) {
-		this.filename = filename;
-		this.tags = tags;
-		this.expirationDate = expirationDate;
-		this.mimeType = mimeType;
-		this.id = null;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public FileDescription(String id, String filename, Collection<String> tags,
-			Date expirationDate, String mimeType) {
-		this.filename = filename;
-		this.tags = tags;
-		this.expirationDate = expirationDate;
-		this.mimeType = mimeType;
-		this.id = id;
-	}
+    public Date getExpirationDate() {
+        return expirationDate;
+    }
 
-	public String getId() {
-		return id;
-	}
+    public String getMimeType() {
+        return mimeType;
+    }
 
-	public Date getExpirationDate() {
-		return expirationDate;
-	}
+    public Collection<String> getTags() {
+        return tags;
+    }
 
-	public String getMimeType() {
-		return mimeType;
-	}
+    public String getFilename() {
+        return filename;
+    }
 
-	// public Map<String, String> getMetaData() { return metaData;}
-
-	public Collection<String> getTags() {
-		return tags;
-	}
-
-	public String getFilename() {
-		return filename;
-	}
-
-	@Override
-	public String toString() {
-		final String VALI = ", ";
-		return new StringBuilder().append(filename).append(VALI)
-				.append(Arrays.toString(tags.toArray())).toString();
-	}
-
+    @Override
+    public String toString() {
+        return new StringBuilder().append(filename).append(", ").append(Arrays.toString(tags.toArray())).toString();
+    }
 }

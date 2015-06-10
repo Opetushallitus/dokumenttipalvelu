@@ -3,7 +3,6 @@ package fi.vm.sade.valinta.dokumenttipalvelu.resource.impl;
 import org.apache.commons.lang.StringUtils;
 
 public class MimeTypeUtil {
-
     private MimeTypeUtil() {
     }
 

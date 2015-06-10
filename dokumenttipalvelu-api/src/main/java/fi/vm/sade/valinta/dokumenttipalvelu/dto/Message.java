@@ -3,13 +3,7 @@ package fi.vm.sade.valinta.dokumenttipalvelu.dto;
 import java.util.Collection;
 import java.util.Date;
 
-/**
- * 
- * @author Jussi Jartamo
- * 
- */
 public class Message {
-
     private String message;
     private Collection<String> tags;
     private Date expirationDate;
@@ -37,5 +31,4 @@ public class Message {
     public Collection<String> getTags() {
         return tags;
     }
-
 }
