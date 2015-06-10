@@ -18,9 +18,7 @@ public interface DocumentDao {
 
     ContentTypeAndEntity getByName(String filename);
 
-<<<<<<< HEAD
     MetaData put(FileDescription description, InputStream documentData);
-=======
+
 	void rename(String documentId, String filename);
->>>>>>> hyväksymiskirjeiden generointi koko haulle
 }
