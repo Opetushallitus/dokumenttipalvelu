@@ -76,17 +76,15 @@ public class DokumenttiResourceImpl implements DokumenttiResource {
         }
     }
 
-	@ApiOperation(value = "Dokumentin uudelleennimeäminen")
-	@PUT
-	@Path("/uudelleennimea/{documentid}")
-	@Consumes("text/plain")
-	@Override
-	public String uudelleennimea(
-			@PathParam("documentid")
-			String documentId, String filename) {
-		documentDao.rename(documentId,filename);
-		return filename;
-	}
+    @ApiOperation(value = "Dokumentin uudelleennimeäminen")
+    @PUT
+    @Path("/uudelleennimea/{documentid}")
+    @Consumes("text/plain")
+    @Override
+    public String uudelleennimea(@PathParam("documentid") String documentId, String filename) {
+        documentDao.rename(documentId, filename);
+        return filename;
+    }
 
     @ApiOperation(value = "Dokumentin lataus tunnisteella", response = InputStream.class)
     @GET

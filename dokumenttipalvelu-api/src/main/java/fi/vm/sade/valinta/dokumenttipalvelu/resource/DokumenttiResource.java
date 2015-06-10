@@ -28,7 +28,6 @@ public interface DokumenttiResource {
     /**
      * Hakee listan kaikista dokumenteista. Ei rajoita kayttajatunnuksella
      * automaattisesti.
-     * <p/>
      * hasAnyRole('ROLE_APP_VALINTAPERUSTEET_CRUD_1.2.246.562.10.00000000001')
      *
      * @return json kaikista taltioiduista dokumenteista
@@ -48,31 +47,23 @@ public interface DokumenttiResource {
     @Path("/lataa/{documentid}")
     Response lataa(@PathParam("documentid") String documentId);
 
-	/**
-	 * @param filename
-	 * @param expirationDate
-	 *            [OPTIONAL] DEFAULTS TO 24H
-	 * @param tags
-	 *            [OPTIONAL]
-	 * @param mimeType
-	 *            [OPTIONAL]
-	 * @param filedata
-	 */
-	@PUT
-	@Path("/tallenna")
-	@Consumes("application/octet-stream")
-	void tallenna(@QueryParam("id") String id,
-			@QueryParam("filename") String filename,
-			@QueryParam("expirationDate") Long expirationDate,
-			@QueryParam("tags") List<String> tags,
-			@QueryParam("mimeType") String mimeType,
-			InputStream filedata);
+    /**
+     * @param expirationDate [OPTIONAL] DEFAULTS TO 24H
+     */
+    @PUT
+    @Path("/tallenna")
+    @Consumes("application/octet-stream")
+    void tallenna(@QueryParam("id") String id,
+                  @QueryParam("filename") String filename,
+                  @QueryParam("expirationDate") Long expirationDate,
+                  @QueryParam("tags") List<String> tags,
+                  @QueryParam("mimeType") String mimeType,
+                  InputStream filedata);
 
-	@PUT
-	@Path("/uudelleennimea/{documentid}")
-	@Consumes("text/plain")
-	String uudelleennimea(@PathParam("documentid") String documentId,
-				  String filename);
+    @PUT
+    @Path("/uudelleennimea/{documentid}")
+    @Consumes("text/plain")
+    String uudelleennimea(@PathParam("documentid") String documentId, String filename);
 
     @PUT
     @Path("/viesti")

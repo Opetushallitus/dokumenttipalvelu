@@ -34,7 +34,7 @@ import fi.vm.sade.valinta.dokumenttipalvelu.dto.FileDescription;
 import fi.vm.sade.valinta.dokumenttipalvelu.dto.MetaData;
 
 /**
- *         TTL is implemented as background job.
+ * TTL is implemented as background job.
  */
 @Repository
 public class DocumentDaoImpl implements DocumentDao, FlushDao {
@@ -110,13 +110,12 @@ public class DocumentDaoImpl implements DocumentDao, FlushDao {
         }
     }
 
-	@Override
-	public void rename(String documentId, String filename) {
-		GridFSDBFile gridFSFile = documents.findOne(new BasicDBObject("_id",
-				documentId));
-		gridFSFile.put("filename", filename);
-		gridFSFile.save();
-	}
+    @Override
+    public void rename(String documentId, String filename) {
+        GridFSDBFile gridFSFile = documents.findOne(new BasicDBObject("_id", documentId));
+        gridFSFile.put("filename", filename);
+        gridFSFile.save();
+    }
 
     @Override
     public ContentTypeAndEntity get(String documentId) {

@@ -20,5 +20,5 @@ public interface DocumentDao {
 
     MetaData put(FileDescription description, InputStream documentData);
 
-	void rename(String documentId, String filename);
+    void rename(String documentId, String filename);
 }
