@@ -104,9 +104,7 @@ public class DocumentDaoImpl implements DocumentDao, FlushDao {
         try {
             this.documents.remove(new BasicDBObject(GRIDFS_EXPIRATION_DATE_FIELD, new BasicDBObject("$lte", now().toDate())));
         } catch (Exception e) {
-            e.printStackTrace();
-            LOG.error("Dokumenttipalvelua ei saatu tyhjennettyä: {}\r\n{}",
-                    e.getMessage(), e.getCause());
+            LOG.error("Dokumenttipalvelua ei saatu tyhjennettyä", e);
         }
     }
 
