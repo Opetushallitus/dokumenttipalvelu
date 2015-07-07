@@ -132,8 +132,7 @@ public class DokumenttiResourceImpl implements DokumenttiResource {
             documentDao.put(new FileDescription(id, filename, tags, new DateTime(expirationDate).toDate(), mimeType), filedata);
 
         } catch (Exception e) {
-            LOG.error("Onkohan MongoDB-yhteys konfiguroitu oikein? Tallennus epäonnistui: {} {} {}",
-                    e.getMessage(), e.getCause(), Arrays.toString(e.getStackTrace()));
+            LOG.error("Onkohan MongoDB-yhteys konfiguroitu oikein? Tallennus epäonnistui", e);
             throw new RuntimeException(e);
         }
     }
