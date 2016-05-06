@@ -68,6 +68,11 @@
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongo-java-driver</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib-nodep</artifactId>
+            <type>jar</type>
+        </dependency>
 
 		<!-- Logging <dependency> <groupId>ch.qos.logback</groupId> <artifactId>logback-classic</artifactId> 
 			<version>1.0.13</version> <scope>test</scope> </dependency -->
@@ -231,6 +236,11 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
             <version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib</artifactId>
+			<version>2.2.2</version>
 		</dependency>
 		<!-- Util -->
 		<dependency>
