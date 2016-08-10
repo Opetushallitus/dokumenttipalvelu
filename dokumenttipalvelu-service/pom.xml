@@ -35,17 +35,6 @@
 		<dependency>
             <groupId>org.jasig.cas.client</groupId>
             <artifactId>cas-client-support-distributed-ehcache</artifactId>
-            <version>3.1.12</version>
-            <exclusions>
-                <exclusion>
-                   <groupId>net.sf.ehcache</groupId>
-                   <artifactId>ehcache</artifactId>
-                </exclusion>
-                <exclusion>
-                	<artifactId>commons-logging</artifactId>
-                    <groupId>commons-logging</groupId>
-                </exclusion>
-            </exclusions>
 	</dependency>
         <!-- Jersey, REST, Json -->
         <dependency>
@@ -57,7 +46,6 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>14.0.1</version>
 		</dependency>
 		<!-- GridFS kanta yhteys -->
 		<dependency>
@@ -161,20 +149,6 @@
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
-		</dependency>
-		<dependency>
-			<groupId>fi.vm.sade.generic</groupId>
-			<artifactId>generic-common</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>validation-api</artifactId>
-					<groupId>javax.validation</groupId>
-				</exclusion>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-			</exclusions>
 		</dependency>
 		<!-- Spring -->
 		<dependency>
