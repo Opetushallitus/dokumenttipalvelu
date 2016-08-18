@@ -50,7 +50,6 @@
     <bean id="swaggerResource" class="io.swagger.jaxrs.listing.ApiListingResource" />
     <bean id="swaggerWriter" class="io.swagger.jaxrs.listing.SwaggerSerializers" />
 
-    <bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider" />
     <bean id="cors-filter" class="fi.vm.sade.valinta.dokumenttipalvelu.resource.impl.filter.CorsResponseFilter"/>
 
 
@@ -62,7 +61,7 @@
             <ref bean="swaggerResource"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
-            <ref bean="jsonProvider" />
+            <ref bean="dokumenttipalveluServiceJsonProvider" />
             <ref bean="cors-filter" />
 
             <ref bean="swaggerWriter" />
