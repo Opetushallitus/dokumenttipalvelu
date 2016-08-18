@@ -58,13 +58,14 @@
         <jaxrs:serviceBeans>
             <ref bean="DokumenttiResourceImpl"/>
             <ref bean="SessionResourceImpl"/>
-            <ref bean="swaggerResourceJSON"/>
+
+            <ref bean="swaggerResource"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <ref bean="jsonProvider" />
             <ref bean="cors-filter" />
-            <ref bean="resourceWriter" />
-            <ref bean="apiWriter" />
+
+            <ref bean="swaggerWriter" />
         </jaxrs:providers>
     </jaxrs:server>
 
