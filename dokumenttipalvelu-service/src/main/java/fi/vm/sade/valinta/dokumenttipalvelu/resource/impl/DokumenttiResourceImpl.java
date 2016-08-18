@@ -31,8 +31,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 import fi.vm.sade.valinta.dokumenttipalvelu.dao.DocumentDao;
 import fi.vm.sade.valinta.dokumenttipalvelu.dao.FlushDao;

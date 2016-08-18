@@ -39,7 +39,7 @@
 
 	<!-- Swagger -->
     <!-- Swagger configuration -->
-    <bean id="swaggerConfig" class="com.wordnik.swagger.jaxrs.config.BeanConfig">
+    <bean id="swaggerConfig" class="io.swagger.jaxrs.config.BeanConfig">
         <property name="resourcePackage" value="fi.vm.sade.valinta.dokumenttipalvelu.resource.impl"/>
         <property name="version" value="1.0"/>
         <property name="basePath" value="${dokumenttipalvelu-service.swagger.basepath}"/>
@@ -47,11 +47,11 @@
         <property name="title" value="Swagger API documentation"/>
         <property name="scan" value="true"/>
     </bean>
-    <bean id="swaggerResourceJSON" class="com.wordnik.swagger.jaxrs.listing.ApiListingResourceJSON"/>
+    <bean id="swaggerResourceJSON" class="io.swagger.jaxrs.listing.ApiListingResource"/>
 
     <!-- Swagger writers -->
-    <bean id="resourceWriter" class="com.wordnik.swagger.jaxrs.listing.ResourceListingProvider" scope="singleton"/>
-    <bean id="apiWriter" class="com.wordnik.swagger.jaxrs.listing.ApiDeclarationProvider" scope="singleton"/>
+    <bean id="resourceWriter" class="io.swagger.jaxrs.listing.SwaggerSerializers" scope="singleton"/>
+    <bean id="apiWriter" class="io.swagger.jaxrs.listing.ApiListingResource" scope="singleton"/>
 
     <bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider" />
     <bean id="cors-filter" class="fi.vm.sade.valinta.dokumenttipalvelu.resource.impl.filter.CorsResponseFilter"/>
