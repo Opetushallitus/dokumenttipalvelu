@@ -160,6 +160,7 @@ public class DokumenttiResourceImpl implements DokumenttiResource {
     @PreAuthorize("hasAnyRole('ROLE_APP_SIJOITTELU_READ','ROLE_APP_SIJOITTELU_READ_UPDATE','ROLE_APP_SIJOITTELU_CRUD')")
     @GET
     @Path("/osoitetarrat/{hakukohdeOid}")
+    @Produces(MediaType.APPLICATION_JSON)
     public Collection<MetaData> osoitetarrat(@PathParam("hakukohdeOid") String hakukohdeOid) {
         final String name = "osoitetarrat_" + hakukohdeOid + ".pdf";
         return documentDao.getMetaDataByName(name);
@@ -169,6 +170,7 @@ public class DokumenttiResourceImpl implements DokumenttiResource {
     @PreAuthorize("hasAnyRole('ROLE_APP_SIJOITTELU_READ','ROLE_APP_SIJOITTELU_READ_UPDATE','ROLE_APP_SIJOITTELU_CRUD')")
     @GET
     @Path("/hyvaksymiskirjeet/{hakukohdeOid}")
+    @Produces(MediaType.APPLICATION_JSON)
     public Collection<MetaData> hyvaksymiskirjeet(@PathParam("hakukohdeOid") String hakukohdeOid) {
         final String name = "hyvaksymiskirje_" + hakukohdeOid + ".pdf";
         return documentDao.getMetaDataByName(name);
@@ -178,6 +180,7 @@ public class DokumenttiResourceImpl implements DokumenttiResource {
     @PreAuthorize("hasAnyRole('ROLE_APP_SIJOITTELU_READ','ROLE_APP_SIJOITTELU_READ_UPDATE','ROLE_APP_SIJOITTELU_CRUD')")
     @GET
     @Path("/sijoitteluntulokset/{hakukohdeOid}")
+    @Produces(MediaType.APPLICATION_JSON)
     public Collection<MetaData> sijoitteluntulokset(@PathParam("hakukohdeOid") String hakukohdeOid) {
         final String name = "sijoitteluntulos_" + hakukohdeOid + ".xls";
         return documentDao.getMetaDataByName(name);
