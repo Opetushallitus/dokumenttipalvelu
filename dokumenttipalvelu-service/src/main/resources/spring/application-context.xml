@@ -47,11 +47,8 @@
         <property name="title" value="Swagger API documentation"/>
         <property name="scan" value="true"/>
     </bean>
-    <bean id="swaggerResourceJSON" class="io.swagger.jaxrs.listing.ApiListingResource"/>
-
-    <!-- Swagger writers -->
-    <bean id="resourceWriter" class="io.swagger.jaxrs.listing.SwaggerSerializers" scope="singleton"/>
-    <bean id="apiWriter" class="io.swagger.jaxrs.listing.ApiListingResource" scope="singleton"/>
+    <bean id="swaggerResource" class="io.swagger.jaxrs.listing.ApiListingResource" />
+    <bean id="swaggerWriter" class="io.swagger.jaxrs.listing.SwaggerSerializers" />
 
     <bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider" />
     <bean id="cors-filter" class="fi.vm.sade.valinta.dokumenttipalvelu.resource.impl.filter.CorsResponseFilter"/>
