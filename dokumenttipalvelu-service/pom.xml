@@ -226,11 +226,6 @@
 			<artifactId>spring-test</artifactId>
             <version>${spring.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>cglib</groupId>
-			<artifactId>cglib</artifactId>
-			<version>2.2.2</version>
-		</dependency>
 		<!-- Util -->
 		<dependency>
 			<groupId>joda-time</groupId>
