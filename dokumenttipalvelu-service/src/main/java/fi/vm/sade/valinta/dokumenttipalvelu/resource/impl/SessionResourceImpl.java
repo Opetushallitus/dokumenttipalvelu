@@ -15,6 +15,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 @Component("SessionResourceImpl")
+@Path("session")
 @Api(value = "/session", description = "Sessionhallinta")
 public class SessionResourceImpl implements SessionResource {
 
