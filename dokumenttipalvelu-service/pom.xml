@@ -17,7 +17,6 @@
 
 	<properties>
 		<slf4j.version>1.7.5</slf4j.version>
-		<jersey.version>2.10.3</jersey.version>
 	</properties>
 <repositories>
   <repository>
@@ -274,23 +273,12 @@
             </exclusions>
         </dependency>
 		<dependency>
-			<groupId>net.sf.ehcache</groupId>
-			<artifactId>ehcache-core</artifactId>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-rs-service-description-swagger</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>io.swagger</groupId>
-			<artifactId>swagger-jersey2-jaxrs</artifactId>
-            <version>${swagger.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.glassfish.jersey.containers</groupId>
-					<artifactId>jersey-container-servlet-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.glassfish.jersey.media</groupId>
-					<artifactId>jersey-media-multipart</artifactId>
-				</exclusion>
-			</exclusions>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>fi.vm.sade.dokumenttipalvelu</groupId>
