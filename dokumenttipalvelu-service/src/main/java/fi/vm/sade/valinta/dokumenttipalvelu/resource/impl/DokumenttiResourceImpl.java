@@ -42,6 +42,7 @@ import fi.vm.sade.valinta.dokumenttipalvelu.dto.Message;
 import fi.vm.sade.valinta.dokumenttipalvelu.dto.MetaData;
 import fi.vm.sade.valinta.dokumenttipalvelu.resource.DokumenttiResource;
 
+@PreAuthorize("isAuthenticated()")
 @Component("DokumenttiResourceImpl")
 @Path("dokumentit")
 @Api(value = "/dokumentit", description = "Dokumenttipalvelun rajapinta")
