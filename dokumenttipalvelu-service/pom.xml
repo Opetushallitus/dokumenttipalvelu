@@ -37,7 +37,6 @@
 		<dependency>
             <artifactId>commons-io</artifactId>
             <groupId>commons-io</groupId>
-            <version>2.4</version>
 		</dependency>
 		<dependency>
 			<artifactId>commons-lang</artifactId>
@@ -46,7 +45,6 @@
 		<dependency>
             <artifactId>commons-io</artifactId>
             <groupId>commons-io</groupId>
-            <version>2.4</version>
 		</dependency>
 		<dependency>
             <groupId>org.jasig.cas.client</groupId>
