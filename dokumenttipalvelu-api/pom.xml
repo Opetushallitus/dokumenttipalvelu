@@ -8,7 +8,7 @@
 	<parent>
         <groupId>fi.vm.sade.dokumenttipalvelu</groupId>
         <artifactId>dokumenttipalvelu</artifactId>
-        <version>3.0-SNAPSHOT</version>
+        <version>4.0-SNAPSHOT</version>
     </parent>
     
 	<artifactId>dokumenttipalvelu-api</artifactId>
