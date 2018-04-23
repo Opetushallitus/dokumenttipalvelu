@@ -87,7 +87,7 @@ public class DocumentDaoImpl implements DocumentDao, FlushDao {
                                 (String) file.get(GRIDFS_FILENAME_FIELD),
                                 (String) file.get(GRIDFS_CONTENT_TYPE_FIELD),
                                 createdAt, (Date) file.get(GRIDFS_EXPIRATION_DATE_FIELD),
-                                tags, (Map) Collections.emptyMap(),
+                                tags, Collections.emptyMap(),
                                 humanReadableByteCount(
                                         (Long) file.get(GRIDFS_LENGTH_FIELD),
                                         true), (String) file
@@ -118,9 +118,13 @@ public class DocumentDaoImpl implements DocumentDao, FlushDao {
     @Override
     public ContentTypeAndEntity get(String documentId) {
         GridFSDBFile gridFSFile = documents.findOne(new BasicDBObject("_id", documentId));
-        return new ContentTypeAndEntity(gridFSFile.getInputStream(),
-                gridFSFile.getContentType(), gridFSFile.getFilename(),
-                gridFSFile.getLength());
+        if (gridFSFile != null) {
+            return new ContentTypeAndEntity(gridFSFile.getInputStream(),
+                    gridFSFile.getContentType(), gridFSFile.getFilename(),
+                    gridFSFile.getLength());
+        } else {
+            throw new IllegalArgumentException(String.format("Could not find document with id '%s'", documentId));
+        }
     }
 
     @Override
