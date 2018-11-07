@@ -1,0 +1,52 @@
+sudo: required
+
+language: java
+
+jdk:
+- oraclejdk8
+
+services:
+- docker
+
+cache:
+  directories:
+  - $HOME/.m2
+
+env:
+  global:
+  # ARTIFACTORY_USERNAME
+  - secure: "bZ7cVdY6l/ZXaIRy/M6yXRmyIBPxYGMq7sE6+NZtV388oOG5xhBMzJ84/vg5wEELrHkZWbLQvD8PBez4XwUsmRsnjC9UiOU31uahIc2erHjjOEHZG0eR5sl/rn/hVIvSGcYX0pd2zagb+nV3i7zhXU/QDPYzi9a9aECg44Q3MxY+wTP9KE7uhZG1dDAEwKeYhohRtNoRuu84C0wMzytQl9uHWD0yehQJCVpviG7gUlMYjD1QLsYmlTnjlzMZP8Mo2x0hYp4TiDkio/jQ2C2HbEB1SMU3kAr5GGFFmbI26Gm9nAY9vitXYJb9v1ffd4K4/+jOof3AjdetyFDy1doVwtmCmdF0PHZvGG2lf+fjZoI529gz4y+8+pnOBYtg/1CN7tDlrBFY9DInermPW5ProL5pJ/ZkOpTDf4DqIsPMR8OWCz08BCqVP8eQE/m2fJ5c82qa6krs664VsfRWEI49jy3gYy6D7nuPFUn9gy7pJI51g+BQGfFoZVAdFYRubiPB3t9eqopeVHub5HQhHJVDQ+qwBx6PXXKecHQJVg5GjSRtP48vfqNcrEZYwmC4cuknWmJ99vT06oOJTtTsl0bBPVVNrMPKHVdDSYrEFqTY5cLJfrjiRPtNpYM2nEVVv/YCv9gHaSSHpwCt3tf7zoGLpwzXpldwFojvqXqCXhuoHFg="
+  # ARTIFACTORY_PASSWORD
+  - secure: "DjPXhUXi3XNw43xUCKW/xc/sMarQQOk1xuBnN0JSFH0j3U7Pk+niRLZqkgG2ML69pB6QVutl7QOeuAqAy7npoNeu7Zl7E1oE0Ag9dW+Y54tMMF2Hx28Tnf7bKJVuDGwf9fhQKcCcMWnSOo4db8j+b5K4Z+Vemk0b+Je749V3F6eXScslbWYIo/HLOeCPDgSdFpWNVpe8zto23aEg2oG1zDciaqHRSQffkPZuQ24VvXvt4FaG+76dXsnniAVLkBd8TJpT1kouziwQCC/YOcrOs7Xal4CMrN098SiHnJR3Vnz/gqJkSa4BOz3a7MmolkFeIyWvzrl33/VNVHMWsNDlhPORk59b93omnYdNrn461HXs5JXRumgmY/Ng34xTb1rRMIPOGu/SQpNXdTQd8+AA51DMcT1W3+ajcrYiiEyYhpmYQv1yl4A5Rg1P82glDueIx9IbSRkRszNCEg63AJhC0W0Pqy4xtXzUsZ/hoiG0VFzHHl6gTk/N2tFlPbKNh8901ZOKc+rB9bfYzBMw9Ko3qM3ymsFIrkurifgyf3+nfN1DXRLDmKQYajew1+nYmq7EoPYlDqDv4iZSwyYUzip26WTl4wW1QIdDCJwtooQNjDcR4Fe+tZ/vC82210QNMtSSP0mohvwOvcuQW3dA/BfX0HnlYHmz3Cv67VkXfdgdRwU="
+  # AWS_ACCESS_KEY_ID
+  - secure: "RH0O9YKz79CAP+wCtp4Q5KxqjhpFcD44b1GvTdlLUv2pwjTY5fYGikl9iDPnoDa/VaiQb/lHKhlhxo58KptZVjbywZVGzEGIyUBgaolmuCL3aC8fSp5ZCreQMrChnLHO42wQQbiKuxI8jNTQul5vPq2Bv/M/DG7uEu79rjuMHbKoUh1k8kpfAjmWgEXjsbtUsQfBBwScnmM9vNFs9kqH0Q/qi1sEawXkTTpQoLWiBf2O+emDMuu9z1OlRAaZOWWxlLhrj9ECuKkjWcmEBNPRJqedD2wS04xxoD1jB9NK+F7rR00GBwBL3TZh++71yshLf307BtkK4Lv0HsYhMUd5WEOq4jfafneRqPGxu6ov6s059jj9BPQseNrguIiHC8h1Yz0e1E+VlCMI4B0IzJFY/MRc9/0ZbW46Q76y5T2EIc4ZS1q0112XmGJjiB47AnP9XSgVLj3+QmPfMfrx6TO0xId29PlUUPK4bKsFJjFXMRPaYbT6b2vN05s9pClzJNdAZCJPoX7RYQr5mSpoU7jhDtLgTbSilhEOq1+IkvtOooWkPC1f8pxdltS531U19jXLObYJRBM2EqbdleFnrfLS2kx6/mCuI2HBBMpuKAporTK7u4ACmInh0lt+Uw4XPWRgc65TdNvu8hO13hnCuNf3Mb/LgmpdlbnLfPjljmJ4da8="
+  # AWS_SECRET_ACCESS_KEY
+  - secure: "h5FxQ+SvdepGHynfc5kFC2Ea22S6T+cWHQRUDfY3uRTo97PmZNTGCqLA6MDNzjioKz8Wp8u6EzqGW1KCEVnsd6etnsGhQ+TFjSisPiw0AkBbjJ9HHTQ87xNl6FgNwg/rnMJR2ErkcOwxqtVU/zERyQydZSSLpF9Zig4idFsTPODMiUmNWXNWKR2tneeybW6oIFDqbXbg89BJOku1BdAgV8yuW0gx7PHblzb/+4Hsz8ktKPig0jJCETi2wiMx/AdmNYy6VB2tA4uL+8pOXYydhH2yRNONPd6LNy8nuF61i/oxm7wVNZvyBeAzQCL4y4M+ZXlHv7Uj/yq8fzjY1HSLHTeV7j75+bism8/ZO3n3uoi+Baa7G1u+yfbrVlN8VqVUblEqeWxeM0potDjlantgjmTCYEodsnnTtE+CE5h3aDRcEtqtmqhRiOs+cIrc+n5hF2VdoLl7pD8Hjbck6BOdompdM+S0AHTEtTk//W1IHDP1IItqrvDXJCXJ/wVTEBsADIuXJUbOqTNw9jEkLTM5aEL4bDhzOIXtqvYlvaEgjq/oqIY8jnELOcXSJiS1u+zAMrivRL3Fq9R46pY0V/3z5zcvX1q0C0kKYObbC/UjReGonFrHgyLoHCs90UuT+b9B9qruhBn3pLY5o8PuTFibhi+Al7sAPjOPJ7xMm9M8uLA="
+
+install:
+- git clone https://github.com/Opetushallitus/ci-tools.git
+- source ci-tools/common/setup-tools.sh
+- sudo sh -c "printf '\n%s penaali.hard.ware.fi\n' $(dig +short artifactory.opintopolku.fi|head -n1) >> /etc/hosts"
+- export ARTIFACT_NAME="dokumenttipalvelu"
+
+script:
+- mvn clean install -B -Dbranch=${TRAVIS_BRANCH} -Drevision=${TRAVIS_COMMIT} -DbuildNumber=${TRAVIS_BUILD_NUMBER}
+
+- mv dokumenttipalvelu-service/target/dokumenttipalvelu-service.war $DOCKER_BUILD_DIR/artifact/dokumenttipalvelu-service.war
+- cp -vr src/main/resources/oph-configuration $DOCKER_BUILD_DIR/config/
+
+- export BASE_IMAGE="baseimage-war:master"
+- ./ci-tools/common/pull-image.sh
+- ./ci-tools/build/build-war.sh $ARTIFACT_NAME
+
+deploy:
+- provider: script
+  script: mvn deploy -pl dokumenttipalvelu-api -DskipTests --settings ci-tools/common/maven-settings.xml
+  skip_cleanup: true
+  on:
+#    all_branches: true
+    branch: master
+- provider: script
+  script: ./ci-tools/build/upload-image.sh $ARTIFACT_NAME
+  on:
+    all_branches: true
