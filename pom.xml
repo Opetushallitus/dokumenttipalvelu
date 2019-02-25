@@ -6,7 +6,7 @@
 
     <artifactId>dokumenttipalvelu</artifactId>
     <groupId>fi.vm.sade.dokumenttipalvelu</groupId>
-    <version>5.2-SNAPSHOT</version>
+    <version>5.3-SNAPSHOT</version>
 
     <packaging>pom</packaging>
 
@@ -44,21 +44,6 @@
                 <artifactId>javaee-web-api</artifactId>
                 <version>7.0</version>
                 <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>fi.vm.sade.generic</groupId>
-                <artifactId>generic-common</artifactId>
-                <version>9.6-SNAPSHOT</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>jsr311-api</artifactId>
-                        <groupId>javax.ws.rs</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>jersey-server</artifactId>
-                        <groupId>com.sun.jersey</groupId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>fi.vm.sade.java-utils</groupId>
