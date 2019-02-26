@@ -23,8 +23,8 @@
         <joda.version>2.9.4</joda.version>
         <slf4j.version>1.7.25</slf4j.version>
         <spring.asm.version>3.1.4.RELEASE</spring.asm.version>
-        <spring.version>4.3.22.RELEASE</spring.version>
-        <spring.security.version>4.1.5.RELEASE</spring.security.version>
+        <spring.version>5.1.5.RELEASE</spring.version>
+        <spring.security.version>4.2.11.RELEASE</spring.security.version>
         <jackson2.version>2.9.7</jackson2.version>
 
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -49,7 +49,7 @@
             <dependency>
                 <groupId>fi.vm.sade.java-utils</groupId>
                 <artifactId>opintopolku-cas-servlet-filter</artifactId>
-                <version>0.1.0-SNAPSHOT</version>
+                <version>0.1.2-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <artifactId>commons-io</artifactId>
@@ -230,11 +230,6 @@
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-webmvc</artifactId>
-                <version>${spring.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework</groupId>
-                <artifactId>spring-webmvc-portlet</artifactId>
                 <version>${spring.version}</version>
             </dependency>
             <dependency>
