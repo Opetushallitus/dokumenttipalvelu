@@ -3,7 +3,7 @@ sudo: required
 language: java
 
 jdk:
-- oraclejdk8
+- openjdk11
 
 services:
 - docker
@@ -24,7 +24,7 @@ env:
   - secure: "h5FxQ+SvdepGHynfc5kFC2Ea22S6T+cWHQRUDfY3uRTo97PmZNTGCqLA6MDNzjioKz8Wp8u6EzqGW1KCEVnsd6etnsGhQ+TFjSisPiw0AkBbjJ9HHTQ87xNl6FgNwg/rnMJR2ErkcOwxqtVU/zERyQydZSSLpF9Zig4idFsTPODMiUmNWXNWKR2tneeybW6oIFDqbXbg89BJOku1BdAgV8yuW0gx7PHblzb/+4Hsz8ktKPig0jJCETi2wiMx/AdmNYy6VB2tA4uL+8pOXYydhH2yRNONPd6LNy8nuF61i/oxm7wVNZvyBeAzQCL4y4M+ZXlHv7Uj/yq8fzjY1HSLHTeV7j75+bism8/ZO3n3uoi+Baa7G1u+yfbrVlN8VqVUblEqeWxeM0potDjlantgjmTCYEodsnnTtE+CE5h3aDRcEtqtmqhRiOs+cIrc+n5hF2VdoLl7pD8Hjbck6BOdompdM+S0AHTEtTk//W1IHDP1IItqrvDXJCXJ/wVTEBsADIuXJUbOqTNw9jEkLTM5aEL4bDhzOIXtqvYlvaEgjq/oqIY8jnELOcXSJiS1u+zAMrivRL3Fq9R46pY0V/3z5zcvX1q0C0kKYObbC/UjReGonFrHgyLoHCs90UuT+b9B9qruhBn3pLY5o8PuTFibhi+Al7sAPjOPJ7xMm9M8uLA="
 
 install:
-- git clone https://github.com/Opetushallitus/ci-tools.git
+- git clone --single-branch --branch jdk11 https://github.com/Opetushallitus/ci-tools.git
 - source ci-tools/common/setup-tools.sh
 - sudo sh -c "printf '\n%s penaali.hard.ware.fi\n' $(dig +short artifactory.opintopolku.fi|head -n1) >> /etc/hosts"
 - export ARTIFACT_NAME="dokumenttipalvelu"
@@ -35,7 +35,7 @@ script:
 - mv dokumenttipalvelu-service/target/dokumenttipalvelu-service.war $DOCKER_BUILD_DIR/artifact/dokumenttipalvelu-service.war
 - cp -vr src/main/resources/oph-configuration $DOCKER_BUILD_DIR/config/
 
-- export BASE_IMAGE="baseimage-war:master"
+- export BASE_IMAGE="baseimage-war:jdk11"
 - ./ci-tools/common/pull-image.sh
 - ./ci-tools/build/build-war.sh $ARTIFACT_NAME
 
