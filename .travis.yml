@@ -3,7 +3,7 @@ sudo: required
 language: java
 
 jdk:
-- oraclejdk8
+- openjdk11
 
 services:
 - docker
@@ -32,16 +32,16 @@ install:
 script:
 - mvn clean install -B -Dbranch=${TRAVIS_BRANCH} -Drevision=${TRAVIS_COMMIT} -DbuildNumber=${TRAVIS_BUILD_NUMBER}
 
-- mv dokumenttipalvelu-service/target/dokumenttipalvelu-service.war $DOCKER_BUILD_DIR/artifact/dokumenttipalvelu-service.war
+- mv dokumenttipalvelu-service/target/dokumenttipalvelu-service-*allinone.jar $DOCKER_BUILD_DIR/artifact/${ARTIFACT_NAME}.jar
 - cp -vr src/main/resources/oph-configuration $DOCKER_BUILD_DIR/config/
 
-- export BASE_IMAGE="baseimage-war:master"
+- export BASE_IMAGE="baseimage-fatjar:jdk11"
 - ./ci-tools/common/pull-image.sh
-- ./ci-tools/build/build-war.sh $ARTIFACT_NAME
+- ./ci-tools/build/build-fatjar.sh $ARTIFACT_NAME
 
 deploy:
 - provider: script
-  script: mvn deploy -pl dokumenttipalvelu-api -DskipTests --settings ci-tools/common/maven-settings.xml
+  script: mvn deploy -pl fi.vm.sade.dokumenttipalvelu:dokumenttipalvelu,dokumenttipalvelu-api -DskipTests --settings ci-tools/common/maven-settings.xml
   skip_cleanup: true
   on:
 #    all_branches: true

@@ -7,7 +7,7 @@
     <parent>
         <groupId>fi.vm.sade.dokumenttipalvelu</groupId>
         <artifactId>dokumenttipalvelu</artifactId>
-        <version>5.2-SNAPSHOT</version>
+        <version>5.3-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
 
@@ -26,13 +26,9 @@
     <build>
         <plugins>
             <plugin>
-                <inherited>true</inherited>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <release>8</release>
                 </configuration>
             </plugin>
         </plugins>
