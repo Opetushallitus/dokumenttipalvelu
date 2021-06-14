@@ -183,7 +183,7 @@ public class DokumenttiResourceImpl implements DokumenttiResource {
     @Path("/sijoitteluntulokset/{hakukohdeOid}")
     @Produces(MediaType.APPLICATION_JSON)
     public Collection<MetaData> sijoitteluntulokset(@PathParam("hakukohdeOid") String hakukohdeOid) {
-        final String name = "sijoitteluntulos_" + hakukohdeOid + ".xls";
+        final String name = "sijoitteluntulos_" + hakukohdeOid + ".xlsx";
         return documentDao.getMetaDataByName(name);
     }
 
