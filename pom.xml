@@ -25,7 +25,7 @@
         <spring.asm.version>3.1.4.RELEASE</spring.asm.version>
         <spring.version>5.1.5.RELEASE</spring.version>
         <spring.security.version>4.2.11.RELEASE</spring.security.version>
-        <jackson2.version>2.9.7</jackson2.version>
+        <jackson2.version>2.9.10.8</jackson2.version>
 
         <maven-antrun-plugin.version>1.7</maven-antrun-plugin.version>
     </properties>
