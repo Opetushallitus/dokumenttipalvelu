@@ -23,7 +23,7 @@
         <joda.version>2.9.4</joda.version>
         <slf4j.version>1.7.25</slf4j.version>
         <spring.asm.version>3.1.4.RELEASE</spring.asm.version>
-        <spring.version>5.1.5.RELEASE</spring.version>
+        <spring.version>5.2.21.RELEASE</spring.version>
         <spring.security.version>4.2.11.RELEASE</spring.security.version>
         <jackson2.version>2.9.7</jackson2.version>
 
