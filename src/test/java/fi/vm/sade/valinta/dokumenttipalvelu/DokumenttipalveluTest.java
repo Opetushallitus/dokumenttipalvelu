@@ -152,6 +152,8 @@ public class DokumenttipalveluTest {
         .thenReturn(completedFuture(PutObjectResponse.builder().build()));
     when(client.getObjectAttributes(any(GetObjectAttributesRequest.class)))
         .thenReturn(completedFuture(GetObjectAttributesResponse.builder().build()));
+    when(client.listObjectsV2(any(ListObjectsV2Request.class)))
+        .thenReturn(completedFuture(ListObjectsV2Response.builder().isTruncated(false).build()));
     final ObjectMetadata metadata =
         dokumenttipalvelu.save(
             null,

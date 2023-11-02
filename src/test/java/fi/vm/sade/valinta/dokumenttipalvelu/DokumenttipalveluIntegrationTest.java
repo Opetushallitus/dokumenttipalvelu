@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.testcontainers.containers.localstack.LocalStackContainer.Service.S3;
 
 import fi.vm.sade.valinta.dokumenttipalvelu.dto.ObjectEntity;
+import fi.vm.sade.valinta.dokumenttipalvelu.dto.ObjectHead;
 import fi.vm.sade.valinta.dokumenttipalvelu.dto.ObjectMetadata;
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -119,20 +120,43 @@ public class DokumenttipalveluIntegrationTest {
     assertNotNull(metadata.lastModified);
     assertNotNull(metadata.eTag);
 
+    final ObjectMetadata tokaMetadata =
+        dokumenttipalvelu.save(
+            "id-2",
+            "toka.txt",
+            Date.from(Instant.now().plus(Duration.of(2, ChronoUnit.DAYS))),
+            Collections.singletonList("tokapalvelu"),
+            "text/plain",
+            Files.newInputStream(Paths.get("src/test/resources/testfile.txt")));
+    assertEquals("id-2", tokaMetadata.documentId);
+    assertEquals("t-tokapalvelu/id-2", tokaMetadata.key);
+    assertEquals(metadata.eTag, tokaMetadata.eTag);
+
     final ObjectEntity objectEntity = dokumenttipalvelu.get(metadata.key);
     assertEquals("text/plain", objectEntity.contentType);
     assertEquals(
         "This is a test file.", IOUtils.toString(objectEntity.entity, StandardCharsets.UTF_8));
     assertEquals(20, objectEntity.contentLength);
     assertEquals("testifile.txt", objectEntity.fileName);
-    assertEquals("t-testipalvelu/t-bar-xyz/id-1", metadata.key);
-    assertEquals("id-1", metadata.documentId);
+    assertEquals("id-1", objectEntity.documentId);
 
-    final Collection<ObjectMetadata> objects =
+    final ObjectHead objectHead = dokumenttipalvelu.head(metadata.key);
+    assertEquals("text/plain", objectHead.contentType);
+    assertEquals(20, objectHead.contentLength);
+    assertEquals("testifile.txt", objectHead.fileName);
+    assertEquals("id-1", objectHead.documentId);
+
+    final Collection<ObjectMetadata> findWithTagsResults =
         dokumenttipalvelu.find(Collections.singleton("testipalvelu"));
-    assertEquals(1, objects.size());
-    assertTrue(objects.stream().findFirst().isPresent());
-    assertEquals("id-1", objects.stream().findFirst().get().documentId);
+    assertEquals(1, findWithTagsResults.size());
+    assertTrue(findWithTagsResults.stream().findFirst().isPresent());
+    assertEquals("id-1", findWithTagsResults.stream().findFirst().get().documentId);
+
+    final Collection<ObjectMetadata> findWithTagsAndDocumentIdResults =
+        dokumenttipalvelu.find(Arrays.asList("testipalvelu", "id-1"));
+    assertEquals(1, findWithTagsAndDocumentIdResults.size());
+    assertTrue(findWithTagsAndDocumentIdResults.stream().findFirst().isPresent());
+    assertEquals("id-1", findWithTagsAndDocumentIdResults.stream().findFirst().get().documentId);
 
     dokumenttipalvelu.rename(metadata.key, "file2.txt");
     final ObjectEntity renamedEntity = dokumenttipalvelu.get(metadata.key);
@@ -148,6 +172,29 @@ public class DokumenttipalveluIntegrationTest {
     final CompletionException e =
         assertThrows(CompletionException.class, () -> dokumenttipalvelu.get("id-1"));
     assertInstanceOf(NoSuchKeyException.class, e.getCause());
+  }
+
+  @Test
+  public void testThrowsExceptionWhenSavingWithExistingDocumentId() throws IOException {
+    dokumenttipalvelu.save(
+        "id-1",
+        "testifile.txt",
+        Date.from(Instant.now().plus(Duration.of(1, ChronoUnit.DAYS))),
+        Arrays.asList("testipalvelu", "&bar-xyz#"),
+        "text/plain",
+        Files.newInputStream(Paths.get("src/test/resources/testfile.txt")));
+    final CompletionException e =
+        assertThrows(
+            CompletionException.class,
+            () ->
+                dokumenttipalvelu.save(
+                    "id-1",
+                    "tokafile.txt",
+                    Date.from(Instant.now().plus(Duration.of(1, ChronoUnit.DAYS))),
+                    Collections.singletonList("tokapalvelu"),
+                    "text/plain",
+                    Files.newInputStream(Paths.get("src/test/resources/testfile.txt"))));
+    assertInstanceOf(DocumentIdAlreadyExistsException.class, e.getCause());
   }
 
   @Test
@@ -186,6 +233,10 @@ public class DokumenttipalveluIntegrationTest {
     final CompletionException e =
         assertThrows(CompletionException.class, () -> dokumenttipalvelu.get("not_existing"));
     assertInstanceOf(NoSuchKeyException.class, e.getCause());
+
+    final CompletionException ex =
+        assertThrows(CompletionException.class, () -> dokumenttipalvelu.head("not_existing"));
+    assertInstanceOf(NoSuchKeyException.class, ex.getCause());
   }
 
   private FileDownload download(final URL url) throws IOException {

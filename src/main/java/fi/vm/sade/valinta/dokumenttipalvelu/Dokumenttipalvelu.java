@@ -1,6 +1,7 @@
 package fi.vm.sade.valinta.dokumenttipalvelu;
 
 import fi.vm.sade.valinta.dokumenttipalvelu.dto.ObjectEntity;
+import fi.vm.sade.valinta.dokumenttipalvelu.dto.ObjectHead;
 import fi.vm.sade.valinta.dokumenttipalvelu.dto.ObjectMetadata;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,7 +9,9 @@ import java.net.URL;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
@@ -67,7 +70,7 @@ public class Dokumenttipalvelu {
   }
 
   private CompletableFuture<Collection<ObjectMetadata>> findRecursive(
-      final Collection<String> tags,
+      final Collection<String> terms,
       final Collection<ObjectMetadata> previousResults,
       final String nextMarker) {
     final ListObjectsV2Request.Builder requestBuilder =
@@ -76,8 +79,8 @@ public class Dokumenttipalvelu {
       requestBuilder.continuationToken(nextMarker);
     }
     LOGGER.info(
-        "findRecursive: tags={}, previousResults size={}, nextMarker={}",
-        tags,
+        "findRecursive: terms={}, previousResults size={}, nextMarker={}",
+        terms,
         previousResults.size(),
         nextMarker);
     return getClient()
@@ -88,16 +91,22 @@ public class Dokumenttipalvelu {
                   res.contents().stream()
                       .filter(
                           s3Object -> {
-                            if (tags.isEmpty()) {
+                            if (terms.isEmpty()) {
                               return true;
                             }
-                            final Collection<String> objectTags = extractTags(s3Object.key());
-                            return tags.stream().map(this::sanitize).allMatch(objectTags::contains);
+                            final String documentId = extractDocumentId(s3Object.key());
+                            final Set<String> objectTerms =
+                                Stream.concat(
+                                        extractTags(s3Object.key()).stream(), Stream.of(documentId))
+                                    .collect(Collectors.toSet());
+                            return terms.stream()
+                                .map(this::sanitize)
+                                .allMatch(objectTerms::contains);
                           })
                       .map(this::convert)
                       .collect(Collectors.toList()));
               if (res.isTruncated()) {
-                return findRecursive(tags, previousResults, res.nextContinuationToken());
+                return findRecursive(terms, previousResults, res.nextContinuationToken());
               } else {
                 return CompletableFuture.completedFuture(previousResults);
               }
@@ -105,25 +114,25 @@ public class Dokumenttipalvelu {
   }
 
   /**
-   * Finds documents where all the provided tags match. If tags collection is empty, returns all
-   * objects.
+   * Finds documents where all the provided terms match. Terms are matched against tags and document
+   * id. Returns all documents with empty terms collection.
    *
-   * @param tags Collection of tags
+   * @param terms Collection of terms
    * @return Collection of metadata objects
    */
-  public CompletableFuture<Collection<ObjectMetadata>> findAsync(final Collection<String> tags) {
-    return findRecursive(tags, new ArrayList<>(), null);
+  public CompletableFuture<Collection<ObjectMetadata>> findAsync(final Collection<String> terms) {
+    return findRecursive(terms, new ArrayList<>(), null);
   }
 
   /**
-   * Finds documents where all the provided tags match. If tags collection is empty, returns all
-   * objects.
+   * Finds documents where all the provided terms match. Terms are matched against tags and document
+   * id. Returns all documents with empty terms collection.
    *
-   * @param tags Collection of tags
+   * @param terms Collection of terms
    * @return Collection of metadata objects
    */
-  public Collection<ObjectMetadata> find(final Collection<String> tags) {
-    return findAsync(tags).join();
+  public Collection<ObjectMetadata> find(final Collection<String> terms) {
+    return findAsync(terms).join();
   }
 
   /**
@@ -167,9 +176,44 @@ public class Dokumenttipalvelu {
   }
 
   /**
+   * Fetch document metadata with key.
+   *
+   * @param key Document's key
+   * @return Document's metadata
+   * @throws java.util.concurrent.CompletionException with NoSuchKeyException as cause if document
+   *     was not found with given key
+   */
+  public CompletableFuture<ObjectHead> headAsync(final String key) {
+    LOGGER.info("headAsync: key={}", key);
+    return getClient()
+        .headObject(HeadObjectRequest.builder().bucket(bucketName).key(key).build())
+        .thenApply(
+            response ->
+                new ObjectHead(
+                    extractDocumentId(key),
+                    response.metadata().get(METADATA_FILENAME),
+                    response.contentType(),
+                    response.contentLength(),
+                    extractTags(key),
+                    response.expires()));
+  }
+
+  /**
+   * Fetch document metadata with key.
+   *
+   * @param key Document's key
+   * @return Document's metadata
+   * @throws java.util.concurrent.CompletionException with NoSuchKeyException as cause if document
+   *     was not found
+   */
+  public ObjectHead head(final String key) {
+    return headAsync(key).join();
+  }
+
+  /**
    * Generates a download link, that works until the expiration date is reached.
    *
-   * @param key Object key
+   * @param key Document's key
    * @param expirationDuration How long the link should be active
    * @return Unauthenticated download URL
    */
@@ -193,7 +237,8 @@ public class Dokumenttipalvelu {
    * @param tags Collection of tags that the document can be searched with
    * @param contentType Document's content type
    * @param data Document's data input stream
-   * @return Metadata describing the document
+   * @return Metadata describing the document. If an existing document exists with same document id,
+   *     will return a failed future with DocumentIdAlreadyExistsException.
    */
   public CompletableFuture<ObjectMetadata> saveAsync(
       final String documentId,
@@ -219,34 +264,45 @@ public class Dokumenttipalvelu {
     } catch (final IOException e) {
       throw new RuntimeException("Error reading input data", e);
     }
-    return getClient()
-        .putObject(
-            PutObjectRequest.builder()
-                .bucket(bucketName)
-                .key(key)
-                .expires(expirationDate.toInstant())
-                .contentType(contentType)
-                .metadata(Collections.singletonMap(METADATA_FILENAME, fileName))
-                .build(),
-            body)
+    return findAsync(Collections.singleton(documentId))
         .thenCompose(
-            putObjectResponse ->
-                getClient()
-                    .getObjectAttributes(
-                        GetObjectAttributesRequest.builder()
+            existing -> {
+              if (existing.isEmpty()) {
+                return getClient()
+                    .putObject(
+                        PutObjectRequest.builder()
                             .bucket(bucketName)
                             .key(key)
-                            .objectAttributes(ObjectAttributes.E_TAG, ObjectAttributes.OBJECT_SIZE)
-                            .build())
-                    .thenApply(
-                        attributesResponse ->
-                            new ObjectMetadata(
-                                key,
-                                id,
-                                extractTags(key),
-                                attributesResponse.lastModified(),
-                                attributesResponse.objectSize(),
-                                attributesResponse.eTag())));
+                            .expires(expirationDate.toInstant())
+                            .contentType(contentType)
+                            .metadata(Collections.singletonMap(METADATA_FILENAME, fileName))
+                            .build(),
+                        body)
+                    .thenCompose(
+                        putObjectResponse ->
+                            getClient()
+                                .getObjectAttributes(
+                                    GetObjectAttributesRequest.builder()
+                                        .bucket(bucketName)
+                                        .key(key)
+                                        .objectAttributes(
+                                            ObjectAttributes.E_TAG, ObjectAttributes.OBJECT_SIZE)
+                                        .build())
+                                .thenApply(
+                                    attributesResponse ->
+                                        new ObjectMetadata(
+                                            key,
+                                            id,
+                                            extractTags(key),
+                                            attributesResponse.lastModified(),
+                                            attributesResponse.objectSize(),
+                                            attributesResponse.eTag())));
+              } else {
+                throw new CompletionException(
+                    new DocumentIdAlreadyExistsException(
+                        String.format("documentId %s already exists", documentId)));
+              }
+            });
   }
 
   /**
@@ -271,9 +327,9 @@ public class Dokumenttipalvelu {
   }
 
   /**
-   * Renames an object to a new file name.
+   * Renames a document to a new file name.
    *
-   * @param key Existing object key
+   * @param key Existing document's key
    * @param fileName New file name
    */
   public CompletableFuture<Void> renameAsync(final String key, final String fileName) {
@@ -292,9 +348,9 @@ public class Dokumenttipalvelu {
   }
 
   /**
-   * Renames an object to a new file name.
+   * Renames a document to a new file name.
    *
-   * @param key Existing object key
+   * @param key Existing document's key
    * @param fileName New file name
    */
   public void rename(final String key, final String fileName) {
@@ -302,9 +358,9 @@ public class Dokumenttipalvelu {
   }
 
   /**
-   * Deletes object
+   * Deletes a document
    *
-   * @param key Existing object key
+   * @param key Existing document's key
    */
   public CompletableFuture<Void> deleteAsync(final String key) {
     LOGGER.info("deleteAsync: key={}", key);
@@ -314,9 +370,9 @@ public class Dokumenttipalvelu {
   }
 
   /**
-   * Deletes object
+   * Deletes a document
    *
-   * @param key Existing object key
+   * @param key Existing document's key
    */
   public void delete(final String key) {
     deleteAsync(key).join();
