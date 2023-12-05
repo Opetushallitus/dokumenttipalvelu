@@ -10,7 +10,7 @@ käyttöön lisäämällä se riippuvuudeksi sovellukseen:
     <dependency>
         <groupId>fi.vm.sade.dokumenttipalvelu</groupId>
         <artifactId>dokumenttipalvelu</artifactId>
-        <version>6.9-SNAPSHOT</version>
+        <version>[viimeisin versio]</version>
     </dependency>
 </dependencies>
 ```
