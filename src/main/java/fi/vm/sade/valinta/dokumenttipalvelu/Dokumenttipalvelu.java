@@ -399,7 +399,7 @@ public class Dokumenttipalvelu {
     return value.replaceAll("[^a-zA-Z0-9_.-]", "");
   }
 
-  String composeKey(final Collection<String> tags, final String documentId) {
+  public String composeKey(final Collection<String> tags, final String documentId) {
     if (tags == null) {
       throw new IllegalArgumentException("Tags is null");
     }
