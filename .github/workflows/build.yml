@@ -65,7 +65,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Deploy jar library
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/OK-323'
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/OK-331-hyva-possu'
         shell: bash
         env:
           ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
