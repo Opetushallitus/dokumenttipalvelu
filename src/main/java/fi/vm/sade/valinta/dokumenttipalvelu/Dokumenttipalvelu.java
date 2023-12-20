@@ -42,6 +42,7 @@ public class Dokumenttipalvelu {
   private static final Logger LOGGER = LoggerFactory.getLogger(Dokumenttipalvelu.class);
   private static final String TAG_FORMAT = "t-%s";
   private static final String METADATA_FILENAME = "filename";
+
   private final String awsRegion;
   private final String bucketName;
   public Integer listObjectsMaxKeys = 1000;
@@ -324,6 +325,34 @@ public class Dokumenttipalvelu {
       final String contentType,
       final InputStream data) {
     return saveAsync(documentId, fileName, expirationDate, tags, contentType, data).join();
+  }
+
+  /**
+   * Changes expiration date of a document.
+   *
+   * @param key Existing document's key
+   * @param expirationDate Date when the document will be removed
+   */
+  public CompletableFuture<Void> changeExpirationDateAsync(final String key, final Date expirationDate) {
+    return getClient()
+      .copyObject(CopyObjectRequest.builder()
+        .sourceBucket(bucketName)
+        .destinationBucket(bucketName)
+        .sourceKey(key)
+        .destinationKey(key)
+        .expires(expirationDate.toInstant())
+        .build())
+      .thenApply(response -> null);
+  }
+
+  /**
+   * Changes expiration date of a document.
+   *
+   * @param key Existing document's key
+   * @param expirationDate Date when the document will be removed
+   */
+  public void changeExpirationDate(final String key, final Date expirationDate) {
+    changeExpirationDateAsync(key, expirationDate).join();
   }
 
   /**

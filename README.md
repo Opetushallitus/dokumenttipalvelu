@@ -23,8 +23,8 @@ import fi.vm.sade.valinta.dokumenttipalvelu.Dokumenttipalvelu;
 @Configuration
 public class DokumenttipalveluConfig {
     @Bean
-    public Dokumenttipalvelu dokumenttipalvelu(@Value("aws.region") final String region,
-                                               @Value("aws.bucket.name") final String bucketName) {
+    public Dokumenttipalvelu dokumenttipalvelu(@Value("${aws.region}") final String region,
+                                               @Value("${aws.bucket.name}") final String bucketName) {
         return new Dokumenttipalvelu(region, bucketName);
     }
 }
