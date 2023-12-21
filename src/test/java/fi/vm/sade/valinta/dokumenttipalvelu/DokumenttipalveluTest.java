@@ -158,7 +158,6 @@ public class DokumenttipalveluTest {
         dokumenttipalvelu.save(
             null,
             "testfile.txt",
-            new Date(),
             Collections.emptySet(),
             "text/plain",
             Files.newInputStream(Paths.get("src/test/resources/testfile.txt")));

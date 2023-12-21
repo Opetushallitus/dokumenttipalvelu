@@ -61,7 +61,6 @@ stä.
 final ObjectMetadata metadata=dokumenttipalvelu.save(
         "my-id",
         "file.pdf",
-        Date.from(Instant.now().plus(Duration.of(1,ChronoUnit.DAYS))),
         Arrays.asList("viestintapalvelu","categoria-A"),
         "application/pdf",
         Files.newInputStream(Paths.get("file.pdf")));

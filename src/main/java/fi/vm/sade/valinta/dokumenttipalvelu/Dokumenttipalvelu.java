@@ -234,7 +234,6 @@ public class Dokumenttipalvelu {
    *
    * @param documentId Document's id, can be left null, then it will be generated as a new UUID
    * @param fileName File name, will be saved as part of document's metadata
-   * @param expirationDate Date when the document will be removed
    * @param tags Collection of tags that the document can be searched with
    * @param contentType Document's content type
    * @param data Document's data input stream
@@ -244,19 +243,17 @@ public class Dokumenttipalvelu {
   public CompletableFuture<ObjectMetadata> saveAsync(
       final String documentId,
       final String fileName,
-      final Date expirationDate,
       final Collection<String> tags,
       final String contentType,
       final InputStream data) {
     final String id = documentId != null ? documentId : UUID.randomUUID().toString();
     final String key = composeKey(tags, id);
     LOGGER.info(
-        "saveAsync: documentId={}, id={}, key={}, fileName={}, expirationDate={}, tags={}, contentType={}",
+        "saveAsync: documentId={}, id={}, key={}, fileName={}, tags={}, contentType={}",
         documentId,
         id,
         key,
         fileName,
-        expirationDate,
         tags,
         contentType);
     AsyncRequestBody body;
@@ -274,7 +271,6 @@ public class Dokumenttipalvelu {
                         PutObjectRequest.builder()
                             .bucket(bucketName)
                             .key(key)
-                            .expires(expirationDate.toInstant())
                             .contentType(contentType)
                             .metadata(Collections.singletonMap(METADATA_FILENAME, fileName))
                             .build(),
@@ -311,7 +307,6 @@ public class Dokumenttipalvelu {
    *
    * @param documentId Document's id, can be left null, then it will be generated as a new UUID
    * @param fileName File name, will be saved as part of document's metadata
-   * @param expirationDate Date when the document will be removed
    * @param tags Collection of tags that the document can be searched with
    * @param contentType Document's content type
    * @param data Document's data input stream
@@ -320,39 +315,33 @@ public class Dokumenttipalvelu {
   public ObjectMetadata save(
       final String documentId,
       final String fileName,
-      final Date expirationDate,
       final Collection<String> tags,
       final String contentType,
       final InputStream data) {
-    return saveAsync(documentId, fileName, expirationDate, tags, contentType, data).join();
+    return saveAsync(documentId, fileName, tags, contentType, data).join();
   }
 
   /**
-   * Changes expiration date of a document.
+   * Move document to another bucket.
    *
    * @param key Existing document's key
-   * @param expirationDate Date when the document will be removed
+   * @param destinationBucket to move document to
    */
-  public CompletableFuture<Void> changeExpirationDateAsync(final String key, final Date expirationDate) {
+  public CompletableFuture<Void> moveToAnotherBucketAsync(
+      final String key, String destinationBucket) {
     return getClient()
-      .copyObject(CopyObjectRequest.builder()
-        .sourceBucket(bucketName)
-        .destinationBucket(bucketName)
-        .sourceKey(key)
-        .destinationKey(key)
-        .expires(expirationDate.toInstant())
-        .build())
-      .thenApply(response -> null);
+        .copyObject(
+            CopyObjectRequest.builder()
+                .sourceBucket(bucketName)
+                .destinationBucket(destinationBucket)
+                .sourceKey(key)
+                .destinationKey(key)
+                .build())
+        .thenApply(response -> this.deleteAsync(key).join());
   }
 
-  /**
-   * Changes expiration date of a document.
-   *
-   * @param key Existing document's key
-   * @param expirationDate Date when the document will be removed
-   */
-  public void changeExpirationDate(final String key, final Date expirationDate) {
-    changeExpirationDateAsync(key, expirationDate).join();
+  public void moveToAnotherBucket(String key, String destinationBucket) {
+    this.moveToAnotherBucketAsync(key, destinationBucket).join();
   }
 
   /**
