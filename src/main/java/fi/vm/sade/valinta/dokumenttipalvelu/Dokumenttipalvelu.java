@@ -105,7 +105,7 @@ public class Dokumenttipalvelu {
                           })
                       .map(this::convert)
                       .collect(Collectors.toList()));
-              if (res.isTruncated()) {
+              if (Boolean.TRUE.equals(res.isTruncated())) {
                 return findRecursive(terms, previousResults, res.nextContinuationToken());
               } else {
                 return CompletableFuture.completedFuture(previousResults);
