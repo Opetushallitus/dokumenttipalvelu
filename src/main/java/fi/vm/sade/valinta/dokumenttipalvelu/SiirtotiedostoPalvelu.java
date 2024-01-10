@@ -1,6 +1,8 @@
 package fi.vm.sade.valinta.dokumenttipalvelu;
 
 import fi.vm.sade.valinta.dokumenttipalvelu.dto.ObjectMetadata;
+import software.amazon.awssdk.utils.StringUtils;
+
 import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -34,12 +36,23 @@ public class SiirtotiedostoPalvelu extends Dokumenttipalvelu {
     return "";
   }
 
+  private Collection<String> tags(String sourceSystem, Optional<String> subCategory) {
+    return subCategory.isPresent()
+            ? Arrays.asList(sourceSystem, subCategory.get())
+            : Arrays.asList(sourceSystem);
+  }
+
+  @Override
+  String composeKey(final Collection<String> tags, final String documentId) {
+    return String.format("%s/%s", tags.stream().findFirst().orElse("unknown"), documentId);
+  }
+
   /**
    * Saves siirtotiedosto document.
    *
    * @param timeRangeStart Startpoint of the data timerange contained by this siirtotiedosto
    * @param timeRangeEnd Endpoint of the data timerange contained by this siirtotiedosto
-   * @param category Category (source system) of this siirtotiedosto, e.g. kouta, ataru, etc
+   * @param sourceSystem Source system of this siirtotiedosto, e.g. kouta, ataru, etc
    * @param subCategory More detailed description of the contents
    * @param data Document's data input stream
    * @return Metadata describing the document.
@@ -47,22 +60,22 @@ public class SiirtotiedostoPalvelu extends Dokumenttipalvelu {
   public ObjectMetadata saveSiirtotiedosto(
       final Optional<Date> timeRangeStart,
       final Optional<Date> timeRangeEnd,
-      final String category,
+      final String sourceSystem,
       final Optional<String> subCategory,
       final InputStream data) {
 
+    if (StringUtils.isEmpty(sourceSystem)) {
+      throw new IllegalArgumentException("Source system cannot be empty");
+    }
     final String categoryStr =
         subCategory.isPresent() ? String.format("%s_", subCategory.get()) : "";
     final String documentId =
         String.format(
-            "%s%s%s",
+            "%s%s%s.json",
             categoryStr, timeRangeString(timeRangeStart, timeRangeEnd), UUID.randomUUID());
-    final Collection<String> tags =
-        subCategory.isPresent()
-            ? Arrays.asList(category, subCategory.get())
-            : Arrays.asList(category);
+    final Collection<String> tags = tags(sourceSystem, subCategory);
     // TODO Poista expirationDate siinä vaiheessa kun se poistuu save -metodista
     final Date expirationDate = Date.from(Instant.now().plus(Duration.of(5, ChronoUnit.DAYS)));
-    return save(documentId, documentId + ".json", expirationDate, tags, "json", data);
+    return save(documentId, documentId, expirationDate, tags, "json", data);
   }
 }
