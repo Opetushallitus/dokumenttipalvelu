@@ -20,7 +20,8 @@ import java.util.UUID;
 public class SiirtotiedostoPalvelu extends Dokumenttipalvelu {
     final DateTimeFormatter dateTimeFormatter = new DateTimeFormatterBuilder()
             .appendPattern("[yyyy-MM-dd'T'HH:mm:ss]")
-            .appendPattern("[dd.MM.yyyy HH.mm.ss]")
+            .appendPattern("[dd.MM.yyyy HH:mm]")
+            .appendPattern("[yyyy-MM-dd HH:mm:ss.SSSSSS XXX]")
             .toFormatter();
 
     public SiirtotiedostoPalvelu(String awsRegion, String bucketName) {
