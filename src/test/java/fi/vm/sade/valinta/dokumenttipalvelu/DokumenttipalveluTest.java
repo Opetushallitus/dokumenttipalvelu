@@ -10,11 +10,15 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.stubbing.OngoingStubbing;
 import software.amazon.awssdk.core.async.AsyncRequestBody;
+import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
@@ -43,6 +47,17 @@ public class DokumenttipalveluTest {
   private final Dokumenttipalvelu dokumenttipalvelu =
       new MockDokumenttipalvelu("eu-west-1", bucketName);
 
+  class RetryableException extends SdkException {
+
+    protected RetryableException(Builder builder) {
+      super(builder);
+    }
+
+    @Override
+    public boolean retryable() {
+      return true;
+    }
+  }
   @BeforeEach
   public void beforeEach() {
     reset(client);
@@ -146,14 +161,30 @@ public class DokumenttipalveluTest {
                 .build()));
   }
 
+  private void mockSequenceForSave(int nbrOfRecoverablePutFailures, int nbrOfRecoverableGetAttributesFailures) {
+    RetryableException exception = new RetryableException(SdkException.builder());
+
+    OngoingStubbing<CompletableFuture<PutObjectResponse>> putCall =
+      when(client.putObject(any(PutObjectRequest.class), any(AsyncRequestBody.class)));
+    for (int retryCount = 0; retryCount < nbrOfRecoverablePutFailures; retryCount++) {
+      putCall = putCall.thenThrow(exception);
+    }
+    putCall.thenReturn(completedFuture(PutObjectResponse.builder().build()));
+
+    OngoingStubbing<CompletableFuture<GetObjectAttributesResponse>> getAttributesCall =
+      when(client.getObjectAttributes(any(GetObjectAttributesRequest.class)));
+    for (int retryCount = 0; retryCount < nbrOfRecoverableGetAttributesFailures; retryCount++) {
+      getAttributesCall = getAttributesCall.thenThrow(exception);
+    }
+    getAttributesCall.thenReturn(completedFuture(GetObjectAttributesResponse.builder().build()));
+
+    when(client.listObjectsV2(any(ListObjectsV2Request.class)))
+            .thenReturn(completedFuture(ListObjectsV2Response.builder().isTruncated(false).build()));
+  }
+
   @Test
   public void testSaveGeneratesIdWhenNotProvided() throws IOException {
-    when(client.putObject(any(PutObjectRequest.class), any(AsyncRequestBody.class)))
-        .thenReturn(completedFuture(PutObjectResponse.builder().build()));
-    when(client.getObjectAttributes(any(GetObjectAttributesRequest.class)))
-        .thenReturn(completedFuture(GetObjectAttributesResponse.builder().build()));
-    when(client.listObjectsV2(any(ListObjectsV2Request.class)))
-        .thenReturn(completedFuture(ListObjectsV2Response.builder().isTruncated(false).build()));
+    mockSequenceForSave(0, 0);
     final ObjectMetadata metadata =
         dokumenttipalvelu.save(
             null,
@@ -163,5 +194,78 @@ public class DokumenttipalveluTest {
             "text/plain",
             Files.newInputStream(Paths.get("src/test/resources/testfile.txt")));
     assertNotNull(UUID.fromString(metadata.documentId));
+  }
+
+  @Test
+  public void testSaveSucceedsAfterRetry() throws IOException {
+    mockSequenceForSave(2, 2);
+    final ObjectMetadata metadata =
+      dokumenttipalvelu.save(
+              UUID.randomUUID().toString(),
+              "testfile.txt",
+              new Date(),
+              Collections.emptySet(),
+              "text/plain",
+              Files.newInputStream(Paths.get("src/test/resources/testfile.txt")),
+              3
+      );
+    assertNotNull(metadata);
+  }
+
+  @Test
+  public void testSaveFailsAfterPutObjectRetries() throws IOException {
+    mockSequenceForSave(4, 2);
+      try {
+        dokumenttipalvelu.save(
+                UUID.randomUUID().toString(),
+                "testfile.txt",
+                new Date(),
+                Collections.emptySet(),
+                "text/plain",
+                Files.newInputStream(Paths.get("src/test/resources/testfile.txt")),
+                3
+        );
+        fail("Expected exception not thrown");
+      } catch(CompletionException | RetryableException ignored) {}
+  }
+
+  @Test
+  public void testSaveFailsAfterGetAttributesRetries() throws IOException {
+    mockSequenceForSave(0, 4);
+    try {
+      dokumenttipalvelu.save(
+              UUID.randomUUID().toString(),
+              "testfile.txt",
+              new Date(),
+              Collections.emptySet(),
+              "text/plain",
+              Files.newInputStream(Paths.get("src/test/resources/testfile.txt")),
+              3
+      );
+      fail("Expected exception not thrown");
+    } catch(CompletionException | RetryableException ignored) {}
+  }
+
+  @Test
+  public void testSaveFailsWhenNonRetryableError() throws IOException {
+    when(client.putObject(any(PutObjectRequest.class), any(AsyncRequestBody.class)))
+      .thenReturn(completedFuture(PutObjectResponse.builder().build()));
+    when(client.getObjectAttributes(any(GetObjectAttributesRequest.class)))
+      .thenThrow(new RuntimeException());
+    when(client.listObjectsV2(any(ListObjectsV2Request.class)))
+      .thenReturn(completedFuture(ListObjectsV2Response.builder().isTruncated(false).build()));
+    try {
+      dokumenttipalvelu.save(
+              UUID.randomUUID().toString(),
+              "testfile.txt",
+              new Date(),
+              Collections.emptySet(),
+              "text/plain",
+              Files.newInputStream(Paths.get("src/test/resources/testfile.txt")),
+              3
+      );
+      fail("Expected exception not thrown");
+    } catch(RuntimeException ignored) {
+    }
   }
 }
