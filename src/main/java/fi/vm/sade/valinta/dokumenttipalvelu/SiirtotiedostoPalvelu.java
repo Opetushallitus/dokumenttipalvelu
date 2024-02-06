@@ -68,6 +68,8 @@ public class SiirtotiedostoPalvelu extends Dokumenttipalvelu {
    * @param subCategory More detailed description of the contents Value is optional, can be null or
    *     empty.
    * @param data Document's data input stream. Value is mandatory.
+   * @param retryCount Number of retries performed in case save operation failed, and failure was caused by some
+   *                   temporary / recoverable error
    * @return Metadata describing the document.
    */
   public ObjectMetadata saveSiirtotiedosto(
@@ -75,7 +77,8 @@ public class SiirtotiedostoPalvelu extends Dokumenttipalvelu {
       final String timeRangeEnd,
       final String sourceSystem,
       final String subCategory,
-      final InputStream data) {
+      final InputStream data,
+      final int retryCount) {
 
     if (StringUtils.isEmpty(sourceSystem)) {
       throw new IllegalArgumentException("Source system cannot be empty");
@@ -100,6 +103,15 @@ public class SiirtotiedostoPalvelu extends Dokumenttipalvelu {
     final Collection<String> tags = tags(sourceSystem, subCategory);
     // TODO Poista expirationDate siinä vaiheessa kun se poistuu save -metodista
     final Date expirationDate = Date.from(Instant.now().plus(Duration.of(5, ChronoUnit.DAYS)));
-    return save(documentId, documentId, expirationDate, tags, "json", data);
+    return save(documentId, documentId, expirationDate, tags, "json", data, retryCount);
+  }
+
+  public ObjectMetadata saveSiirtotiedosto(
+          final String timeRangeStart,
+          final String timeRangeEnd,
+          final String sourceSystem,
+          final String subCategory,
+          final InputStream data) {
+    return saveSiirtotiedosto(timeRangeStart, timeRangeEnd, sourceSystem, subCategory,data, 0);
   }
 }
