@@ -58,6 +58,7 @@ public class DokumenttipalveluTest {
       return true;
     }
   }
+
   @BeforeEach
   public void beforeEach() {
     reset(client);
@@ -161,25 +162,26 @@ public class DokumenttipalveluTest {
                 .build()));
   }
 
-  private void mockSequenceForSave(int nbrOfRecoverablePutFailures, int nbrOfRecoverableGetAttributesFailures) {
+  private void mockSequenceForSave(
+      int nbrOfRecoverablePutFailures, int nbrOfRecoverableGetAttributesFailures) {
     RetryableException exception = new RetryableException(SdkException.builder());
 
     OngoingStubbing<CompletableFuture<PutObjectResponse>> putCall =
-      when(client.putObject(any(PutObjectRequest.class), any(AsyncRequestBody.class)));
+        when(client.putObject(any(PutObjectRequest.class), any(AsyncRequestBody.class)));
     for (int retryCount = 0; retryCount < nbrOfRecoverablePutFailures; retryCount++) {
       putCall = putCall.thenThrow(exception);
     }
     putCall.thenReturn(completedFuture(PutObjectResponse.builder().build()));
 
     OngoingStubbing<CompletableFuture<GetObjectAttributesResponse>> getAttributesCall =
-      when(client.getObjectAttributes(any(GetObjectAttributesRequest.class)));
+        when(client.getObjectAttributes(any(GetObjectAttributesRequest.class)));
     for (int retryCount = 0; retryCount < nbrOfRecoverableGetAttributesFailures; retryCount++) {
       getAttributesCall = getAttributesCall.thenThrow(exception);
     }
     getAttributesCall.thenReturn(completedFuture(GetObjectAttributesResponse.builder().build()));
 
     when(client.listObjectsV2(any(ListObjectsV2Request.class)))
-            .thenReturn(completedFuture(ListObjectsV2Response.builder().isTruncated(false).build()));
+        .thenReturn(completedFuture(ListObjectsV2Response.builder().isTruncated(false).build()));
   }
 
   @Test
@@ -200,33 +202,32 @@ public class DokumenttipalveluTest {
   public void testSaveSucceedsAfterRetry() throws IOException {
     mockSequenceForSave(2, 2);
     final ObjectMetadata metadata =
-      dokumenttipalvelu.save(
-              UUID.randomUUID().toString(),
-              "testfile.txt",
-              new Date(),
-              Collections.emptySet(),
-              "text/plain",
-              Files.newInputStream(Paths.get("src/test/resources/testfile.txt")),
-              3
-      );
+        dokumenttipalvelu.save(
+            UUID.randomUUID().toString(),
+            "testfile.txt",
+            new Date(),
+            Collections.emptySet(),
+            "text/plain",
+            Files.newInputStream(Paths.get("src/test/resources/testfile.txt")),
+            3);
     assertNotNull(metadata);
   }
 
   @Test
   public void testSaveFailsAfterPutObjectRetries() throws IOException {
     mockSequenceForSave(4, 2);
-      try {
-        dokumenttipalvelu.save(
-                UUID.randomUUID().toString(),
-                "testfile.txt",
-                new Date(),
-                Collections.emptySet(),
-                "text/plain",
-                Files.newInputStream(Paths.get("src/test/resources/testfile.txt")),
-                3
-        );
-        fail("Expected exception not thrown");
-      } catch(CompletionException | RetryableException ignored) {}
+    try {
+      dokumenttipalvelu.save(
+          UUID.randomUUID().toString(),
+          "testfile.txt",
+          new Date(),
+          Collections.emptySet(),
+          "text/plain",
+          Files.newInputStream(Paths.get("src/test/resources/testfile.txt")),
+          3);
+      fail("Expected exception not thrown");
+    } catch (CompletionException | RetryableException ignored) {
+    }
   }
 
   @Test
@@ -234,38 +235,37 @@ public class DokumenttipalveluTest {
     mockSequenceForSave(0, 4);
     try {
       dokumenttipalvelu.save(
-              UUID.randomUUID().toString(),
-              "testfile.txt",
-              new Date(),
-              Collections.emptySet(),
-              "text/plain",
-              Files.newInputStream(Paths.get("src/test/resources/testfile.txt")),
-              3
-      );
+          UUID.randomUUID().toString(),
+          "testfile.txt",
+          new Date(),
+          Collections.emptySet(),
+          "text/plain",
+          Files.newInputStream(Paths.get("src/test/resources/testfile.txt")),
+          3);
       fail("Expected exception not thrown");
-    } catch(CompletionException | RetryableException ignored) {}
+    } catch (CompletionException | RetryableException ignored) {
+    }
   }
 
   @Test
   public void testSaveFailsWhenNonRetryableError() throws IOException {
     when(client.putObject(any(PutObjectRequest.class), any(AsyncRequestBody.class)))
-      .thenReturn(completedFuture(PutObjectResponse.builder().build()));
+        .thenReturn(completedFuture(PutObjectResponse.builder().build()));
     when(client.getObjectAttributes(any(GetObjectAttributesRequest.class)))
-      .thenThrow(new RuntimeException());
+        .thenThrow(new RuntimeException());
     when(client.listObjectsV2(any(ListObjectsV2Request.class)))
-      .thenReturn(completedFuture(ListObjectsV2Response.builder().isTruncated(false).build()));
+        .thenReturn(completedFuture(ListObjectsV2Response.builder().isTruncated(false).build()));
     try {
       dokumenttipalvelu.save(
-              UUID.randomUUID().toString(),
-              "testfile.txt",
-              new Date(),
-              Collections.emptySet(),
-              "text/plain",
-              Files.newInputStream(Paths.get("src/test/resources/testfile.txt")),
-              3
-      );
+          UUID.randomUUID().toString(),
+          "testfile.txt",
+          new Date(),
+          Collections.emptySet(),
+          "text/plain",
+          Files.newInputStream(Paths.get("src/test/resources/testfile.txt")),
+          3);
       fail("Expected exception not thrown");
-    } catch(RuntimeException ignored) {
+    } catch (RuntimeException ignored) {
     }
   }
 }
