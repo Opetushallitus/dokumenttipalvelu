@@ -230,6 +230,41 @@ public class Dokumenttipalvelu {
   }
 
   /**
+   * Puts document to S3.
+   *
+   * @param key Document key
+   * @param fileName File name, will be saved as part of document's metadata
+   * @param expirationDate Date when the document will be removed
+   * @param contentType Document's content type
+   * @param data Document's data input stream
+   * @return Response from AWS
+   */
+  public CompletableFuture<PutObjectResponse> putObject(
+      final String key,
+      final String fileName,
+      final Date expirationDate,
+      final String contentType,
+      final InputStream data) {
+
+    AsyncRequestBody body;
+    try {
+      body = ByteBuffersAsyncRequestBody.from(IoUtils.toByteArray(data));
+    } catch (final IOException e) {
+      throw new RuntimeException("Error reading input data", e);
+    }
+    PutObjectRequest putObjectRequest =
+        PutObjectRequest.builder()
+            .bucket(bucketName)
+            .key(key)
+            .expires(expirationDate.toInstant())
+            .contentType(contentType)
+            .metadata(Collections.singletonMap(METADATA_FILENAME, fileName))
+            .build();
+
+    return getClient().putObject(putObjectRequest, body);
+  }
+
+  /**
    * Fetches the object attributes of the given document object
    *
    * @param id Document id
@@ -264,7 +299,6 @@ public class Dokumenttipalvelu {
    * @param expirationDate Date when the document will be removed
    * @param tags Collection of tags that the document can be searched with
    * @param contentType Document's content type
-   * @param fetchDetailedAttributes Fetch detailed object attributes for saved document
    * @param data Document's data input stream
    * @return Metadata describing the document. If an existing document exists with same document id,
    *     will return a failed future with DocumentIdAlreadyExistsException.
@@ -275,7 +309,6 @@ public class Dokumenttipalvelu {
       final Date expirationDate,
       final Collection<String> tags,
       final String contentType,
-      final boolean fetchDetailedAttributes,
       final InputStream data) {
     final String id = documentId != null ? documentId : UUID.randomUUID().toString();
     final String key = composeKey(tags, id);
@@ -288,52 +321,18 @@ public class Dokumenttipalvelu {
         expirationDate,
         tags,
         contentType);
-    AsyncRequestBody body;
-    try {
-      body = ByteBuffersAsyncRequestBody.from(IoUtils.toByteArray(data));
-    } catch (final IOException e) {
-      throw new RuntimeException("Error reading input data", e);
-    }
-    PutObjectRequest putObjectRequest =
-        PutObjectRequest.builder()
-            .bucket(bucketName)
-            .key(key)
-            .expires(expirationDate.toInstant())
-            .contentType(contentType)
-            .metadata(Collections.singletonMap(METADATA_FILENAME, fileName))
-            .build();
-
     return findAsync(Collections.singleton(documentId))
         .thenCompose(
             existing -> {
               if (existing.isEmpty()) {
-                if (fetchDetailedAttributes) {
-                  return getClient()
-                      .putObject(putObjectRequest, body)
-                      .thenCompose(putObjectResponse -> getObjectAttributesASync(id, key));
-                } else {
-                  return getClient()
-                      .putObject(putObjectRequest, body)
-                      .thenApply(
-                          putObjectResponse ->
-                              new ObjectMetadata(key, id, extractTags(key), null, null, null));
-                }
+                return putObject(key, fileName, expirationDate, contentType, data)
+                    .thenCompose(putObjectResponse -> getObjectAttributesASync(id, key));
               } else {
                 throw new CompletionException(
                     new DocumentIdAlreadyExistsException(
                         String.format("documentId %s already exists", documentId)));
               }
             });
-  }
-
-  public CompletableFuture<ObjectMetadata> saveAsync(
-      final String documentId,
-      final String fileName,
-      final Date expirationDate,
-      final Collection<String> tags,
-      final String contentType,
-      final InputStream data) {
-    return saveAsync(documentId, fileName, expirationDate, tags, contentType, true, data);
   }
 
   private boolean retryable(RuntimeException exp) {
@@ -354,8 +353,6 @@ public class Dokumenttipalvelu {
    * @param tags Collection of tags that the document can be searched with
    * @param contentType Document's content type
    * @param data Document's data input stream
-   * @param retryCount Number of retries performed in case save operation failed, and failure was
-   *     caused by some temporary / recoverable error
    * @return Metadata describing the document
    */
   public ObjectMetadata save(
@@ -364,42 +361,8 @@ public class Dokumenttipalvelu {
       final Date expirationDate,
       final Collection<String> tags,
       final String contentType,
-      final InputStream data,
-      final Integer retryCount) {
-    if (retryCount == 0) {
-      return saveAsync(documentId, fileName, expirationDate, tags, contentType, data).join();
-    }
-
-    int retryNumber = 0;
-    ObjectMetadata metadata = null;
-
-    while (retryNumber++ < retryCount) {
-      try {
-        if (metadata == null) {
-          metadata =
-              saveAsync(documentId, fileName, expirationDate, tags, contentType, false, data)
-                  .join();
-          retryNumber = 1;
-        }
-        metadata = getObjectAttributesASync(metadata.documentId, metadata.key).join();
-        break;
-      } catch (RuntimeException exp) {
-        if (!retryable(exp) || retryNumber == retryCount) {
-          throw exp;
-        }
-      }
-    }
-    return metadata;
-  }
-
-  public ObjectMetadata save(
-      final String documentId,
-      final String fileName,
-      final Date expirationDate,
-      final Collection<String> tags,
-      final String contentType,
       final InputStream data) {
-    return save(documentId, fileName, expirationDate, tags, contentType, data, 0);
+    return saveAsync(documentId, fileName, expirationDate, tags, contentType, data).join();
   }
   /**
    * Renames a document to a new file name.
