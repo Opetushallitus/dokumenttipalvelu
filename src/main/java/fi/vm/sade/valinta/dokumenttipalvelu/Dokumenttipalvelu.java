@@ -176,6 +176,19 @@ public class Dokumenttipalvelu {
   }
 
   /**
+   * Fetch (full) seuranta-document with id.
+   *
+   * @param id Seuranta-document's id (uuid)
+   * @return Full document with content and metadata
+   * @throws java.util.concurrent.CompletionException with NoSuchKeyException as cause if document
+   *     was not found
+   */
+  public ObjectEntity getSeurantaDocumentById(final String id) {
+    String key = composeKey(Collections.singletonList("seuranta"), id);
+    return getAsync(key).join();
+  }
+
+  /**
    * Fetch document metadata with key.
    *
    * @param key Document's key
