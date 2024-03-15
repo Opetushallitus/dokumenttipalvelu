@@ -23,8 +23,8 @@ import fi.vm.sade.valinta.dokumenttipalvelu.Dokumenttipalvelu;
 @Configuration
 public class DokumenttipalveluConfig {
     @Bean
-    public Dokumenttipalvelu dokumenttipalvelu(@Value("aws.region") final String region,
-                                               @Value("aws.bucket.name") final String bucketName) {
+    public Dokumenttipalvelu dokumenttipalvelu(@Value("${aws.region}") final String region,
+                                               @Value("${aws.bucket.name}") final String bucketName) {
         return new Dokumenttipalvelu(region, bucketName);
     }
 }
@@ -61,7 +61,6 @@ stä.
 final ObjectMetadata metadata=dokumenttipalvelu.save(
         "my-id",
         "file.pdf",
-        Date.from(Instant.now().plus(Duration.of(1,ChronoUnit.DAYS))),
         Arrays.asList("viestintapalvelu","categoria-A"),
         "application/pdf",
         Files.newInputStream(Paths.get("file.pdf")));

@@ -14,7 +14,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
-import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.CompletionException;
@@ -110,7 +109,6 @@ public class DokumenttipalveluIntegrationTest {
         dokumenttipalvelu.save(
             "id-1",
             "testifile.txt",
-            Date.from(Instant.now().plus(Duration.of(1, ChronoUnit.DAYS))),
             Arrays.asList("testipalvelu", "&bar-xyz#"),
             "text/plain",
             Files.newInputStream(Paths.get("src/test/resources/testfile.txt")));
@@ -124,7 +122,6 @@ public class DokumenttipalveluIntegrationTest {
         dokumenttipalvelu.save(
             "id-2",
             "toka.txt",
-            Date.from(Instant.now().plus(Duration.of(2, ChronoUnit.DAYS))),
             Collections.singletonList("tokapalvelu"),
             "text/plain",
             Files.newInputStream(Paths.get("src/test/resources/testfile.txt")));
@@ -179,7 +176,6 @@ public class DokumenttipalveluIntegrationTest {
     dokumenttipalvelu.save(
         "id-1",
         "testifile.txt",
-        Date.from(Instant.now().plus(Duration.of(1, ChronoUnit.DAYS))),
         Arrays.asList("testipalvelu", "&bar-xyz#"),
         "text/plain",
         Files.newInputStream(Paths.get("src/test/resources/testfile.txt")));
@@ -190,7 +186,6 @@ public class DokumenttipalveluIntegrationTest {
                 dokumenttipalvelu.save(
                     "id-1",
                     "tokafile.txt",
-                    Date.from(Instant.now().plus(Duration.of(1, ChronoUnit.DAYS))),
                     Collections.singletonList("tokapalvelu"),
                     "text/plain",
                     Files.newInputStream(Paths.get("src/test/resources/testfile.txt"))));
@@ -206,7 +201,6 @@ public class DokumenttipalveluIntegrationTest {
                 dokumenttipalvelu.save(
                     "foo" + i,
                     "testifile.txt",
-                    Date.from(Instant.now().plus(Duration.of(1, ChronoUnit.DAYS))),
                     Collections.singletonList("testipalvelu"),
                     "text/plain",
                     Files.newInputStream(Paths.get("src/test/resources/testfile.txt")));
