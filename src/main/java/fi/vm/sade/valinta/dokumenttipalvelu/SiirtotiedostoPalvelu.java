@@ -51,7 +51,7 @@ public class SiirtotiedostoPalvelu extends Dokumenttipalvelu {
   }
 
   protected String roleSessionName() {
-    return "SiirtotiedostoUpload-session-" + UUID.randomUUID();
+    return "Siirtotiedosto-session-" + UUID.randomUUID();
   }
 
   private final String bucketTargetRoleArn;
