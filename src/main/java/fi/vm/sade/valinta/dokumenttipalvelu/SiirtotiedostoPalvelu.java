@@ -94,6 +94,11 @@ public class SiirtotiedostoPalvelu extends Dokumenttipalvelu {
    * @param subCategory More specific description of the contents, e.g. haku, hakukohde, application
    *     etc. Value is mandatory.
    * @param additionalInfo Additional info to be shown in filename. Value is optional.
+   * @param executionId Identifies the files created within certain siirtotiedosto -operation in source
+   *     system. Useful in cases where several files were created in one operation. Value is
+   *     mandatory
+   * @param executionSubId Identifies the file among the files created within certain siirtotiedosto
+   *     -operation in source system, in case several files were created in one operation.
    * @param data Document's data input stream. Value is mandatory.
    * @param retryCount Number of retries performed in case save operation failed, and failure was
    *     caused by some temporary / recoverable error
@@ -103,6 +108,8 @@ public class SiirtotiedostoPalvelu extends Dokumenttipalvelu {
       final String sourceSystem,
       final String subCategory,
       final String additionalInfo,
+      final String executionId,
+      final int executionSubId,
       final InputStream data,
       final int retryCount) {
 
@@ -112,16 +119,20 @@ public class SiirtotiedostoPalvelu extends Dokumenttipalvelu {
     if (StringUtils.isEmpty(subCategory)) {
       throw new IllegalArgumentException("Subcategory cannot be empty");
     }
+    if (StringUtils.isEmpty(executionId)) {
+      throw new IllegalArgumentException("executionId cannot be empty");
+    }
     if (data == null) {
       throw new IllegalArgumentException("Data cannot be null");
     }
     final String addInfoStr =
         StringUtils.isEmpty(additionalInfo) ? "" : String.format("_%s", additionalInfo);
     final String timestamp = timeStamp();
+    final String executionIdStr = String.format("%s-%d", executionId, executionSubId);
     final String documentId =
         String.format(
             "%s_%s__%s_%s_%s.json",
-            sourceSystem, subCategory, timestamp, addInfoStr, UUID.randomUUID());
+            sourceSystem, subCategory, timestamp, addInfoStr, executionIdStr);
     final Collection<String> tags = tags(sourceSystem, subCategory);
     return saveWithRetry(documentId, tags, data, retryCount);
   }

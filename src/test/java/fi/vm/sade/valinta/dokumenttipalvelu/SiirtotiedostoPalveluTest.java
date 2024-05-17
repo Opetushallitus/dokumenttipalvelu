@@ -9,6 +9,7 @@ import fi.vm.sade.valinta.dokumenttipalvelu.dto.ObjectMetadata;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import org.junit.jupiter.api.Test;
@@ -48,6 +49,8 @@ public class SiirtotiedostoPalveluTest extends Testbase {
             "source",
             "sub",
             "someInfo",
+            UUID.randomUUID().toString(),
+            0,
             Files.newInputStream(Paths.get("src/test/resources/testfile.txt")),
             2);
     assertNotNull(metadata);
@@ -63,6 +66,8 @@ public class SiirtotiedostoPalveluTest extends Testbase {
             "source",
             "sub",
             "",
+            UUID.randomUUID().toString(),
+            0,
             Files.newInputStream(Paths.get("src/test/resources/testfile.txt")),
             2);
     assertNotNull(metadata);
@@ -77,6 +82,8 @@ public class SiirtotiedostoPalveluTest extends Testbase {
           "source",
           "sub",
           "",
+          UUID.randomUUID().toString(),
+          0,
           Files.newInputStream(Paths.get("src/test/resources/testfile.txt")),
           3);
       fail("Expected exception not thrown");
@@ -92,6 +99,8 @@ public class SiirtotiedostoPalveluTest extends Testbase {
           "source",
           "sub",
           "",
+          UUID.randomUUID().toString(),
+          0,
           Files.newInputStream(Paths.get("src/test/resources/testfile.txt")),
           2);
       fail("Expected exception not thrown");
@@ -112,6 +121,8 @@ public class SiirtotiedostoPalveluTest extends Testbase {
           "source",
           "sub",
           "",
+          UUID.randomUUID().toString(),
+          0,
           Files.newInputStream(Paths.get("src/test/resources/testfile.txt")),
           2);
       fail("Expected exception not thrown");
