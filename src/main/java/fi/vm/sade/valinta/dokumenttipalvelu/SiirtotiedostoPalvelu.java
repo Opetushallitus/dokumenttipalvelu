@@ -2,6 +2,8 @@ package fi.vm.sade.valinta.dokumenttipalvelu;
 
 import fi.vm.sade.valinta.dokumenttipalvelu.dto.ObjectMetadata;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -50,6 +52,14 @@ public class SiirtotiedostoPalvelu extends Dokumenttipalvelu {
         tempRoleCredentials.sessionToken());
   }
 
+  protected URI endpointOverride() {
+    try {
+      return new URI("http://localhost:4566");
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   protected String roleSessionName() {
     return "Siirtotiedosto-session-" + UUID.randomUUID();
   }
@@ -94,8 +104,8 @@ public class SiirtotiedostoPalvelu extends Dokumenttipalvelu {
    * @param subCategory More specific description of the contents, e.g. haku, hakukohde, application
    *     etc. Value is mandatory.
    * @param additionalInfo Additional info to be shown in filename. Value is optional.
-   * @param executionId Identifies the files created within certain siirtotiedosto -operation in source
-   *     system. Useful in cases where several files were created in one operation. Value is
+   * @param executionId Identifies the files created within certain siirtotiedosto -operation in
+   *     source system. Useful in cases where several files were created in one operation. Value is
    *     mandatory
    * @param executionSubId Identifies the file among the files created within certain siirtotiedosto
    *     -operation in source system, in case several files were created in one operation.
@@ -128,7 +138,7 @@ public class SiirtotiedostoPalvelu extends Dokumenttipalvelu {
     final String addInfoStr =
         StringUtils.isEmpty(additionalInfo) ? "" : String.format("_%s", additionalInfo);
     final String timestamp = timeStamp();
-    final String executionIdStr = String.format("%s-%d", executionId, executionSubId);
+    final String executionIdStr = String.format("%s_%d", executionId, executionSubId);
     final String documentId =
         String.format(
             "%s_%s__%s_%s_%s.json",
