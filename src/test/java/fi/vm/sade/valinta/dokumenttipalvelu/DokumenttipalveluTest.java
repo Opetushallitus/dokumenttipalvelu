@@ -12,43 +12,11 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.core.async.AsyncRequestBody;
-import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.model.*;
-import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
-public class DokumenttipalveluTest {
-  private final S3AsyncClient client = mock(S3AsyncClient.class);
-  private final S3Presigner presigner = mock(S3Presigner.class);
-  private final String bucketName = "test-bucket";
-
-  class MockDokumenttipalvelu extends Dokumenttipalvelu {
-    public MockDokumenttipalvelu(final String awsRegion, final String bucketName) {
-      super(awsRegion, bucketName);
-    }
-
-    @Override
-    public S3AsyncClient getClient() {
-      return client;
-    }
-
-    @Override
-    public S3Presigner getPresigner() {
-      return presigner;
-    }
-  }
-
-  private final Dokumenttipalvelu dokumenttipalvelu =
-      new MockDokumenttipalvelu("eu-west-1", bucketName);
-
-  @BeforeEach
-  public void beforeEach() {
-    reset(client);
-    reset(presigner);
-  }
-
+public class DokumenttipalveluTest extends Testbase {
   @Test
   public void testComposeKeyValidatesAndSanitizes() {
     assertEquals(

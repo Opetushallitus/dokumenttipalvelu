@@ -31,11 +31,11 @@ import software.amazon.awssdk.utils.IoUtils;
  * Api for saving and fetching documents in AWS S3 backed storage.
  *
  * <p>Should be used as a singleton. For example with Spring, define a bean: <code>
- *      &#064;Bean
- *      public Dokumenttipalvelu dokumenttipalvelu(&#064;Value("${aws.region}") final String region,
- *                                                 &#064;Value("${aws.bucket.name}") final String bucketName) {
- *          return new Dokumenttipalvelu(region, bucketName);
- *      }
+ * &#064;Bean
+ * public Dokumenttipalvelu dokumenttipalvelu(&#064;Value("${aws.region}") final String region,
+ * &#064;Value("${aws.bucket.name}") final String bucketName) {
+ * return new Dokumenttipalvelu(region, bucketName);
+ * }
  * </code>
  */
 public class Dokumenttipalvelu {
@@ -43,7 +43,7 @@ public class Dokumenttipalvelu {
   private static final String TAG_FORMAT = "t-%s";
   private static final String METADATA_FILENAME = "filename";
 
-  private final String awsRegion;
+  protected final String awsRegion;
   private final String bucketName;
   public Integer listObjectsMaxKeys = 1000;
 
@@ -106,7 +106,7 @@ public class Dokumenttipalvelu {
                           })
                       .map(this::convert)
                       .collect(Collectors.toList()));
-              if (res.isTruncated()) {
+              if (Boolean.TRUE.equals(res.isTruncated())) {
                 return findRecursive(terms, previousResults, res.nextContinuationToken());
               } else {
                 return CompletableFuture.completedFuture(previousResults);
@@ -230,6 +230,62 @@ public class Dokumenttipalvelu {
   }
 
   /**
+   * Puts document to S3.
+   *
+   * @param key Document key
+   * @param fileName File name, will be saved as part of document's metadata
+   * @param contentType Document's content type
+   * @param data Document's data input stream
+   * @return Response from AWS
+   */
+  public CompletableFuture<PutObjectResponse> putObject(
+      final String key, final String fileName, final String contentType, final InputStream data) {
+
+    AsyncRequestBody body;
+    try {
+      body = ByteBuffersAsyncRequestBody.from(IoUtils.toByteArray(data));
+    } catch (final IOException e) {
+      throw new RuntimeException("Error reading input data", e);
+    }
+    PutObjectRequest putObjectRequest =
+        PutObjectRequest.builder()
+            .bucket(bucketName)
+            .key(key)
+            .contentType(contentType)
+            .metadata(Collections.singletonMap(METADATA_FILENAME, fileName))
+            .build();
+
+    return getClient().putObject(putObjectRequest, body);
+  }
+
+  /**
+   * Fetches the object attributes of the given document object
+   *
+   * @param id Document id
+   * @param key Document key
+   * @return Metadata describing the document
+   */
+  public CompletableFuture<ObjectMetadata> getObjectAttributesASync(
+      final String id, final String key) {
+    return getClient()
+        .getObjectAttributes(
+            GetObjectAttributesRequest.builder()
+                .bucket(bucketName)
+                .key(key)
+                .objectAttributes(ObjectAttributes.E_TAG, ObjectAttributes.OBJECT_SIZE)
+                .build())
+        .thenApply(
+            attributesResponse ->
+                new ObjectMetadata(
+                    key,
+                    id,
+                    extractTags(key),
+                    attributesResponse.lastModified(),
+                    attributesResponse.objectSize(),
+                    attributesResponse.eTag()));
+  }
+
+  /**
    * Saves document.
    *
    * @param documentId Document's id, can be left null, then it will be generated as a new UUID
@@ -256,44 +312,12 @@ public class Dokumenttipalvelu {
         fileName,
         tags,
         contentType);
-    AsyncRequestBody body;
-    try {
-      body = ByteBuffersAsyncRequestBody.from(IoUtils.toByteArray(data));
-    } catch (final IOException e) {
-      throw new RuntimeException("Error reading input data", e);
-    }
     return findAsync(Collections.singleton(documentId))
         .thenCompose(
             existing -> {
               if (existing.isEmpty()) {
-                return getClient()
-                    .putObject(
-                        PutObjectRequest.builder()
-                            .bucket(bucketName)
-                            .key(key)
-                            .contentType(contentType)
-                            .metadata(Collections.singletonMap(METADATA_FILENAME, fileName))
-                            .build(),
-                        body)
-                    .thenCompose(
-                        putObjectResponse ->
-                            getClient()
-                                .getObjectAttributes(
-                                    GetObjectAttributesRequest.builder()
-                                        .bucket(bucketName)
-                                        .key(key)
-                                        .objectAttributes(
-                                            ObjectAttributes.E_TAG, ObjectAttributes.OBJECT_SIZE)
-                                        .build())
-                                .thenApply(
-                                    attributesResponse ->
-                                        new ObjectMetadata(
-                                            key,
-                                            id,
-                                            extractTags(key),
-                                            attributesResponse.lastModified(),
-                                            attributesResponse.objectSize(),
-                                            attributesResponse.eTag())));
+                return putObject(key, fileName, contentType, data)
+                    .thenCompose(putObjectResponse -> getObjectAttributesASync(id, key));
               } else {
                 throw new CompletionException(
                     new DocumentIdAlreadyExistsException(

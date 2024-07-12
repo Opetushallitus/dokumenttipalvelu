@@ -6,7 +6,7 @@
 
     <artifactId>dokumenttipalvelu</artifactId>
     <groupId>fi.vm.sade.dokumenttipalvelu</groupId>
-    <version>6.11-SNAPSHOT</version>
+    <version>6.12-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Dokumenttipalvelu</name>
@@ -70,6 +70,10 @@
                     <artifactId>commons-logging</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>sts</artifactId>
         </dependency>
 
         <!-- Testing -->
