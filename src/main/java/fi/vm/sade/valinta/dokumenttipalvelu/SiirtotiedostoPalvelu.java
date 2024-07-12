@@ -150,24 +150,82 @@ public class SiirtotiedostoPalvelu extends Dokumenttipalvelu {
   private ObjectMetadata saveWithRetry(
       String documentId, Collection<String> tags, InputStream data, int retryCount) {
     int retryNumber = 0;
-    PutObjectResponse saveResponse = null;
-    ObjectMetadata metadata = null;
     String key = composeKey(tags, documentId);
+    SaveOperationData operationData = doPutObject(key, documentId, data);
+    while (++retryNumber < retryCount && operationData.failed()) {
+      operationData = doPutObject(key, documentId, data);
+    }
 
-    while (retryNumber++ <= retryCount) {
-      try {
-        if (saveResponse == null) {
-          saveResponse = putObject(key, documentId, "json", data).join();
-          retryNumber = 1;
-        }
-        metadata = getObjectAttributesASync(documentId, key).join();
-        break;
-      } catch (RuntimeException exp) {
-        if (!retryable(exp) || retryNumber > retryCount) {
-          throw exp;
-        }
+    if (!operationData.failed()) {
+      retryNumber = 0;
+      operationData = doGetObjectAttributes(key, documentId);
+      while (++retryNumber < retryCount && operationData.failed()) {
+        operationData = doGetObjectAttributes(key, documentId);
       }
     }
-    return metadata;
+
+    if (operationData.failed()) {
+      throw new RuntimeException(operationData.getException());
+    }
+    return operationData.getObjectMetadata();
+  }
+
+  private SaveOperationData doPutObject(String key, String documentId, InputStream data) {
+    try {
+      return new SaveOperationData(putObject(key, documentId, "json", data).join());
+    } catch (RuntimeException exp) {
+      return throwOrReturnRetryableError(exp);
+    }
+  }
+
+  private SaveOperationData doGetObjectAttributes(String key, String documentId) {
+    try {
+      return new SaveOperationData(getObjectAttributesASync(documentId, key).join());
+    } catch (RuntimeException exp) {
+      return throwOrReturnRetryableError(exp);
+    }
+  }
+
+  private SaveOperationData throwOrReturnRetryableError(RuntimeException exp) {
+    if (!retryable(exp)) {
+      throw new RuntimeException(exp);
+    }
+    return new SaveOperationData(exp);
+  }
+
+  private static class SaveOperationData {
+    private PutObjectResponse putResponse;
+    private ObjectMetadata objectMetadata;
+    private RuntimeException exception;
+
+    public SaveOperationData(PutObjectResponse putResponse) {
+      this.putResponse = putResponse;
+      exception = null;
+    }
+
+    public SaveOperationData(ObjectMetadata objectMetadata) {
+      this.objectMetadata = objectMetadata;
+      exception = null;
+    }
+
+    public SaveOperationData(RuntimeException exception) {
+      this.exception = exception;
+    }
+
+    public PutObjectResponse getPutResponse() {
+      return putResponse;
+    }
+
+    public ObjectMetadata getObjectMetadata() {
+      return objectMetadata;
+    }
+
+    public RuntimeException getException() {
+      return exception;
+    }
+
+    public boolean failed() {
+      return this.exception != null;
+    }
   }
 }

@@ -11,7 +11,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.OngoingStubbing;
 import software.amazon.awssdk.core.async.AsyncRequestBody;
@@ -52,7 +51,7 @@ public class SiirtotiedostoPalveluTest extends Testbase {
             UUID.randomUUID().toString(),
             0,
             Files.newInputStream(Paths.get("src/test/resources/testfile.txt")),
-            2);
+            0);
     assertNotNull(metadata);
     assertTrue(metadata.documentId.startsWith("source_sub__"));
     assertTrue(metadata.documentId.contains("_someInfo_"));
@@ -69,31 +68,14 @@ public class SiirtotiedostoPalveluTest extends Testbase {
             UUID.randomUUID().toString(),
             0,
             Files.newInputStream(Paths.get("src/test/resources/testfile.txt")),
-            2);
+            3);
     assertNotNull(metadata);
     assertTrue(metadata.documentId.startsWith("source_sub__"));
   }
 
   @Test
   public void testSaveFailsAfterPutObjectRetries() throws IOException {
-    mockSequenceForSave(4, 2);
-    try {
-      siirtotiedostoPalvelu.saveSiirtotiedosto(
-          "source",
-          "sub",
-          "",
-          UUID.randomUUID().toString(),
-          0,
-          Files.newInputStream(Paths.get("src/test/resources/testfile.txt")),
-          3);
-      fail("Expected exception not thrown");
-    } catch (CompletionException | Testbase.RetryableException ignored) {
-    }
-  }
-
-  @Test
-  public void testSaveFailsAfterGetAttributesRetries() throws IOException {
-    mockSequenceForSave(0, 4);
+    mockSequenceForSave(2, 0);
     try {
       siirtotiedostoPalvelu.saveSiirtotiedosto(
           "source",
@@ -104,7 +86,24 @@ public class SiirtotiedostoPalveluTest extends Testbase {
           Files.newInputStream(Paths.get("src/test/resources/testfile.txt")),
           2);
       fail("Expected exception not thrown");
-    } catch (CompletionException | Testbase.RetryableException ignored) {
+    } catch (RuntimeException ignored) {
+    }
+  }
+
+  @Test
+  public void testSaveFailsAfterGetAttributesRetries() throws IOException {
+    mockSequenceForSave(0, 3);
+    try {
+      siirtotiedostoPalvelu.saveSiirtotiedosto(
+          "source",
+          "sub",
+          "",
+          UUID.randomUUID().toString(),
+          0,
+          Files.newInputStream(Paths.get("src/test/resources/testfile.txt")),
+          3);
+      fail("Expected exception not thrown");
+    } catch (RuntimeException ignored) {
     }
   }
 
