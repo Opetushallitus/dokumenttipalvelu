@@ -75,7 +75,7 @@ public class SiirtotiedostoPalveluTest extends Testbase {
 
   @Test
   public void testSaveFailsAfterPutObjectRetries() throws IOException {
-    mockSequenceForSave(2, 0);
+    mockSequenceForSave(3, 0);
     try {
       siirtotiedostoPalvelu.saveSiirtotiedosto(
           "source",
@@ -92,7 +92,7 @@ public class SiirtotiedostoPalveluTest extends Testbase {
 
   @Test
   public void testSaveFailsAfterGetAttributesRetries() throws IOException {
-    mockSequenceForSave(0, 3);
+    mockSequenceForSave(0, 4);
     try {
       siirtotiedostoPalvelu.saveSiirtotiedosto(
           "source",

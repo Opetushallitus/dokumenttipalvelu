@@ -152,14 +152,14 @@ public class SiirtotiedostoPalvelu extends Dokumenttipalvelu {
     int retryNumber = 0;
     String key = composeKey(tags, documentId);
     SaveOperationData operationData = doPutObject(key, documentId, data);
-    while (++retryNumber < retryCount && operationData.failed()) {
+    while (retryNumber++ < retryCount && operationData.failed()) {
       operationData = doPutObject(key, documentId, data);
     }
 
     if (!operationData.failed()) {
       retryNumber = 0;
       operationData = doGetObjectAttributes(key, documentId);
-      while (++retryNumber < retryCount && operationData.failed()) {
+      while (retryNumber++ < retryCount && operationData.failed()) {
         operationData = doGetObjectAttributes(key, documentId);
       }
     }
