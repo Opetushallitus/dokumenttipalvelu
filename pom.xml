@@ -6,13 +6,13 @@
 
     <artifactId>dokumenttipalvelu</artifactId>
     <groupId>fi.vm.sade.dokumenttipalvelu</groupId>
-    <version>6.12-SNAPSHOT</version>
+    <version>6.13-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Dokumenttipalvelu</name>
 
     <properties>
-        <aws.java.sdk.version>2.20.162</aws.java.sdk.version>
+        <aws.java.sdk.version>2.29.21</aws.java.sdk.version>
         <testcontainers.version>1.19.0</testcontainers.version>
         <awaitility.version>4.2.0</awaitility.version>
     </properties>
