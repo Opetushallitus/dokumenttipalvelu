@@ -26,7 +26,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: mvn clean package
-        working-directory: dokumenttipalvelu
 
   deploy-client-library:
     needs: [ build-and-test ]
@@ -48,6 +47,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: mvn deploy --batch-mode -DskipTests
-        working-directory: dokumenttipalvelu
 
 
