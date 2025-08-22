@@ -12,7 +12,7 @@
     <name>Dokumenttipalvelu</name>
 
     <properties>
-        <aws.java.sdk.version>2.29.21</aws.java.sdk.version>
+        <aws.java.sdk.version>2.32.26</aws.java.sdk.version>
         <testcontainers.version>1.19.0</testcontainers.version>
         <awaitility.version>4.2.0</awaitility.version>
     </properties>
