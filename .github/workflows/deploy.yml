@@ -1,0 +1,51 @@
+name: Dokumenttipalvelu deploy
+on:
+  workflow_dispatch:
+  release:
+    types: [ created ]
+  push:
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'corretto'
+          cache: 'maven'
+
+      - name: Build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: mvn clean package
+
+  deploy-client-library:
+    needs: [ build-and-test ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'corretto'
+          cache: 'maven'
+
+      - name: Deploy Client Library
+        if: ${{ success() && format('refs/heads/{0}', github.event.repository.default_branch) == github.ref }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: mvn deploy --batch-mode -DskipTests
+
+
