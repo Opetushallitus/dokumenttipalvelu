@@ -47,7 +47,7 @@ public class DokumenttipalveluIntegrationTest {
 
   @Container
   private static final LocalStackContainer LOCAL_STACK =
-      new LocalStackContainer(DockerImageName.parse("localstack/localstack:latest"))
+      new LocalStackContainer(DockerImageName.parse("localstack/localstack:4"))
           .withServices(S3)
           .waitingFor(new DockerHealthcheckWaitStrategy());
 
